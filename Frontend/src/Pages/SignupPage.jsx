@@ -10,6 +10,9 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profileImage, setProfileImage] = useState(null);
+  const[goal,setGoal] = useState(null);
+  const[height,setHeight]=useState("");
+  const[weight,setWeight] = useState("")
   const { setUser, setIsLogin } = useAuth();
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +24,8 @@ export default function Signup() {
     formData.append("name", name);
     formData.append("email", email);
     formData.append("password", password);
+    formData.append("height",height);
+    formData.append("weight",weight);
     if (profileImage) {
       formData.append("picture", profileImage)
     }
@@ -98,8 +103,7 @@ export default function Signup() {
               className="w-full px-4 py-3 rounded-xl bg-black/70 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
-
-          <div>
+           <div>
             <label className="block text-sm mb-2 text-gray-300">
               Confirm Password
             </label>
@@ -109,6 +113,33 @@ export default function Signup() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
+              className="w-full px-4 py-3 rounded-xl bg-black/70 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm mb-2 text-gray-300">
+              Weight(in Kg)
+            </label>
+            <input
+              type="text"
+              required
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              placeholder="weight in kg"
+              className="w-full px-4 py-3 rounded-xl bg-black/70 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+                    <div>
+            <label className="block text-sm mb-2 text-gray-300">
+             Height(in cm)
+            </label>
+            <input
+              type="text"
+              required
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
+              placeholder="Height in cm"
               className="w-full px-4 py-3 rounded-xl bg-black/70 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
