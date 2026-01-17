@@ -6,12 +6,14 @@ import useAuth, { AuthContextProvider } from '../Context/AuthContext'
 
 function ProtectedLayout() {
     const {user} = useAuth();
-    if(!user) return <Navigate to="/login"/>;
-  return <AuthContextProvider>
+    if(!user) return <Navigate to="/login" replace/>;
+  return( 
+  <AuthContextProvider>
     <Header/>
     <Outlet/>
     <Footer/>
   </AuthContextProvider>
+  )
 }
 
 export default ProtectedLayout

@@ -1,7 +1,7 @@
 import React, { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Route } from 'react-router-dom'
 import Layout from './Layout/Layout'
+import './index.css'
 import LoginPage from './Pages/LoginPage'
 import SignupPage from './Pages/SignupPage'
 import About from './Pages/About'
@@ -9,7 +9,7 @@ import Contact from './Pages/Contact'
 import HomePage from './Pages/HomePage'
 import ProtectedLayout from './Layout/ProtectedLayout'
 import ProfilePage from './Pages/ProfilePage'
-import { createBrowserRouter, createRoutesFromElements, RouterProvider } from 'react-router'
+import { createBrowserRouter, createRoutesFromElements,Route, RouterProvider } from 'react-router'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,9 +21,9 @@ const router = createBrowserRouter(
         <Route path='/contact' element={<Contact />} />
         <Route path='' element={<HomePage />} />
       </Route>
-      <Route element={<ProtectedLayout />}>
-        <Route path='/profile' element={<ProfilePage />} />
-      </Route>
+      
+      <Route path='/profile' element={<ProfilePage />} />
+      
     </Route>
   )
 )
