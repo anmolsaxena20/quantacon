@@ -81,8 +81,6 @@ const {user,setUser,isLogin,setIsLogin}  = useAuth();
             Login
           </button>
         </form>
-
-        {/* Footer Links */}
         <div className="mt-6 text-center text-sm text-gray-400">
           Don’t have an account?{" "}
           <Link

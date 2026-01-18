@@ -20,9 +20,9 @@ const router = createBrowserRouter(
         <Route path='/about' element={<About />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='' element={<HomePage />} />
-      </Route>
       
       <Route path='/profile' element={<ProfilePage />} />
+      </Route>
       
     </Route>
   )
