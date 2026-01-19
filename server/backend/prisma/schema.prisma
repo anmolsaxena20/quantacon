@@ -1,14 +1,85 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// ============================================
+// PRISMA SCHEMA - FITNESS APP
+// ============================================
+// This file defines your entire database structure
+// Run: npx prisma migrate dev --name init
+// To create the database tables
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" // Using PostgreSQL (can change to mysql if needed)
+}
+
+model User {
+  id String @id @default(uuid())
+
+  email        String? @unique
+  phoneNumber  String? @unique
+  passwordHash String?
+
+  emailVerified Boolean @default(false)
+  phoneVerified Boolean @default(false)
+
+  status UserStatus @default(PENDING)
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  otps          OTP[]
+  oauthAccounts OAuthAccount[]
+  refreshTokens RefreshToken[]
+}
+
+enum UserStatus {
+  PENDING // Signed up, OTP not verified
+  ACTIVE // Verified (OTP or OAuth)
+  SUSPENDED
+}
+
+model OTP {
+  id String @id @default(uuid())
+
+  userId     String
+  identifier String // email or phone
+  codeHash   String
+
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model OAuthAccount {
+  id String @id @default(uuid())
+
+  userId         String
+  provider       OAuthProvider
+  providerUserId String
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+}
+
+enum OAuthProvider {
+  GOOGLE
+}
+
+model RefreshToken {
+  id String @id @default(uuid())
+
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
