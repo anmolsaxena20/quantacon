@@ -18,6 +18,7 @@ import {
   hashOtp,
   compareOtp,
   createAccessToken,
+  createRefreshToken,
   hashRefreshToken,
   sendOtpSms,
   sendOtpEmail,
@@ -28,7 +29,7 @@ import {
   verifyOtpSchema,
   loginSchema,
 } from "../validators/auth.validator.js";
-
+import jwt from "jsonwebtoken";
 // ---------- helpers ----------
 
 function setRefreshCookie(res, token) {
@@ -118,7 +119,7 @@ export async function verifyOtp(req, res) {
 
     const accessToken = createAccessToken({ userId: user.id });
 
-    const refreshToken = crypto.randomUUID();
+    const refreshToken = createRefreshToken({ userId: user.id });
     const refreshTokenHash = await hashRefreshToken(refreshToken);
 
     await storeRefreshToken({
@@ -215,10 +216,7 @@ export async function logout(req, res) {
     if (!token) {
       return res.clearCookie("refreshToken").sendStatus(204);
     }
-
-    const payload = JSON.parse(
-      Buffer.from(token.split(".")[1] || "", "base64").toString()
-    );
+    const payload = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 
     const tokens = await findRefreshTokensByUser(payload.userId);
 

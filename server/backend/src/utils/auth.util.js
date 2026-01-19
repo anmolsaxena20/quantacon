@@ -71,3 +71,9 @@ export function createAccessToken(payload) {
 export async function hashRefreshToken(token) {
   return bcrypt.hash(token, SALT_ROUNDS);
 }
+
+export async function createRefreshToken(token) {
+  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: REFRESH_TOKEN_EXPIRY,
+  });
+}
