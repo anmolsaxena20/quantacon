@@ -1,33 +1,18 @@
-import React, { StrictMode } from 'react'
+﻿import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import Layout from './Layout/Layout'
+import { Provider } from 'react-redux'
 import './index.css'
-import LoginPage from './Pages/LoginPage'
-import SignupPage from './Pages/SignupPage'
-import About from './Pages/About'
-import Contact from './Pages/Contact'
-import HomePage from './Pages/HomePage'
-import ProtectedLayout from './Layout/ProtectedLayout'
-import ProfilePage from './Pages/ProfilePage'
-import { createBrowserRouter, createRoutesFromElements,Route, RouterProvider } from 'react-router'
+import App from './App.jsx'
 
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route>
-      <Route path='/' element={<Layout />}>
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/signup' element={<SignupPage />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='' element={<HomePage />} />
-      
-      <Route path='/profile' element={<ProfilePage />} />
-      </Route>
-      
-    </Route>
-  )
-)
+import { ThemeProvider } from "@/components/theme-provider"
+import { store } from '@/lib/redux-store'
 
 createRoot(document.getElementById('root')).render(
-  <RouterProvider router={router}/>
+    <StrictMode>
+        <Provider store={store}>
+            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                <App />
+            </ThemeProvider>
+        </Provider>
+    </StrictMode>,
 )
