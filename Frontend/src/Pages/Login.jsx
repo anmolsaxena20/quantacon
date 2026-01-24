@@ -1,17 +1,19 @@
 ﻿import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Chrome, ArrowRight, User } from "lucide-react";
 import { toast, Toaster } from "sonner";
+import useAuth from "../Context/AuthContext";
 
 export default function Login() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const[email,setEmail] = useState("");
     const[password,setPassword] = useState("");
+    const {user,setIslogin,setUser} = useAuth();
 
     const handleLogin = async(e) => {
         e.preventDefault();
@@ -37,6 +39,8 @@ export default function Login() {
             localStorage.setItem("token",user.accessToken);
             setTimeout(() => {
             setIsLoading(false);
+            setUser(user);
+            setIslogin(true);
             navigate("/dashboard");
         }, 1500);
         } catch (error) {
@@ -93,6 +97,7 @@ export default function Login() {
                         <Button variant="ghost" type="button" onClick={handleGuest} disabled={isLoading} className="w-full">
                             <User className="mr-2 h-4 w-4" /> Continue as Guest
                         </Button>
+                        <p  className="text-red-800 flex justify-center">Don't have an account? <Link to="/signup" className="text-green-800">  Signup</Link></p>
                     </div>
                 </CardContent>
                 <CardFooter className="justify-center">

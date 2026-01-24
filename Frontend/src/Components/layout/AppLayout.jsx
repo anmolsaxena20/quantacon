@@ -23,7 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import NotificationBell from "@/components/features/NotificationBell";
 import { useNotificationStore } from "@/lib/store";
-
+import { AuthContextProvider } from "../../Context/AuthContext";
 export default function AppLayout() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const location = useLocation();
@@ -58,6 +58,7 @@ export default function AppLayout() {
     }, []);
 
     return (
+        <AuthContextProvider>
         <div className="min-h-screen bg-background text-foreground flex overflow-hidden font-sans">
 
             <aside
@@ -202,5 +203,6 @@ export default function AppLayout() {
                 <Toaster />
             </main>
         </div>
+        </AuthContextProvider>
     );
 }

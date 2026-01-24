@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import useAuth from "../Context/AuthContext";
 
 export default function Dashboard() {
     const handleStreakClick = () => {
@@ -33,6 +34,7 @@ export default function Dashboard() {
         show: { opacity: 1, y: 0 }
     };
 
+    const{user} = useAuth();
     return (
         <motion.div
             variants={container}
@@ -42,7 +44,7 @@ export default function Dashboard() {
         >
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <motion.div variants={item}>
-                    <h1 className="text-3xl font-heading font-bold">Good Morning, Guest</h1>
+                    <h1 className="text-3xl font-heading font-bold">Good Morning, {user?user.name:"Guest"}</h1>
                     <p className="text-muted-foreground">Ready to keep your streak alive?</p>
                 </motion.div>
                 <motion.div
@@ -122,7 +124,7 @@ export default function Dashboard() {
                                         </div>
                                     ))}
                                 </div>
-                                <p className="text-center text-sm font-medium">You're consistent! ðŸ”¥</p>
+                                <p className="text-center text-sm font-medium">You're consistent!</p>
                             </CardContent>
                         </Card>
                     </motion.div>
