@@ -6,18 +6,12 @@ import paymentRoutes from "./routes/payment.routes.js";
 import { requireAuth } from "./middlewares/auth.middleware.js";
 const app = express();
 
-/* -------- Middlewares -------- */
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-/* -------- Routes -------- */
-app.use("/api/auth", authRoutes);
-app.use("/api/payment", paymentRoutes);
 
-/* -------- Health Check -------- */
-app.get("/", (req, res) => {
-  res.send("API running...");
-});
+app.use("/api/auth", authRoutes);
+app.use("/api/payment", requireAuth, paymentRoutes);
 
 export default app;

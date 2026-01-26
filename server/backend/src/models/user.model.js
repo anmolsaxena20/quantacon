@@ -9,8 +9,6 @@ const userSchema = new mongoose.Schema(
       minlength: 2,
       maxlength: 50,
     },
-
-    // Either email or phone is required
     email: {
       type: String,
       unique: true,
@@ -47,8 +45,6 @@ const userSchema = new mongoose.Schema(
       default: "local",
       required: true,
     },
-
-    // For Google OAuth users
     googleId: {
       type: String,
       sparse: true,
@@ -68,7 +64,6 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-// Ensure at least one of email or phone exists
 userSchema.pre("validate", function () {
   if (!this.email && !this.phone) {
     throw new Error("Either email or phone number is required");
