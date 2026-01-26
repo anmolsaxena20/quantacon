@@ -14,6 +14,7 @@ import Chat from "./Pages/Chat";
 import { ChatStoreProvider } from "./Context/ChatStore";
 import Chats from "./Pages/Chats";
 import CommunityLayout from "./Components/layout/CommunityLayout"
+import Logout from "./Pages/LogoutPage";
 function App() {
     return (
         <BrowserRouter>
@@ -25,6 +26,7 @@ function App() {
                     <Route path="create-workout" element={<WorkoutCreator />} />
                     <Route path="progress" element={<ProgressPage />} />
                     <Route path="community/profile-setup" element={<ProfileSetup />} />
+                    <Route path = "logout" element={<Logout/>}/>
                 </Route>
                 <Route path='/community' element={<ChatStoreProvider><CommunityLayout /></ChatStoreProvider>}>
                     <Route path="social" element={<Community />} />
