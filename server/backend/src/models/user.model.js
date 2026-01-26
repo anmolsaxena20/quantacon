@@ -32,7 +32,11 @@ const userSchema = new mongoose.Schema(
       },
       minlength: 8,
     },
-
+    tier: {
+      type: String,
+      default: "free",
+      enum: ["free", "gold", "pro"],
+    },
     authProvider: {
       type: String,
       enum: ["local", "google"],
