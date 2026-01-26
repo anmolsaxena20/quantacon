@@ -126,7 +126,9 @@ export default function AppLayout() {
                 <div className="p-4 border-t bg-black/5 mt-auto mb-4 mx-4 rounded-xl">
                     <div className={cn("flex items-center gap-4", isCollapsed ? "justify-center flex-col" : "px-1")}>
                         <Avatar className="h-12 w-12 border-2 border-primary cursor-pointer hover:scale-105 transition-transform shadow-sm">
-                            <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=guest" />
+                            <AvatarImage 
+                            onClick = {()=>{navigate('/community/profile-setup')}}
+                            src="https://api.dicebear.com/7.x/avataaars/svg?seed=guest" />
                             <AvatarFallback>G</AvatarFallback>
                         </Avatar>
                         {!isCollapsed && (
