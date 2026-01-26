@@ -1,34 +1,60 @@
-import React from 'react'
-import useAuth from '../Context/AuthContext'
-import toast, { Toaster } from 'react-hot-toast';
-import { useNavigate } from 'react-router';
-async function logout() {
-const{user,isLogin,setIsLogin,setUser} = useAuth();
-const Navigate = useNavigate();
-    try {
-        const token = localStorage.getItem("token");
-        if(!token){
-            toast("invalid user");
-            Navigate("/");
+import { useEffect } from "react";
+import useAuth from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+
+function Logout() {
+  const { setUser, setIsLogin } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleLogout = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setTimeout(()=>{
+            toast.error("Invalid session");
+            navigate("/dashboard");
+        },2000)
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:5000/auth/logout", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Logout failed");
         }
-        const res = await fetch("http://localhost:5000/auth/logout",
-            {
-                method:"POST",
-                headers:{
-                    "Authorization":`Bearer ${token}`
-                }
-            }
-        )
-        if(!res.ok) throw new Error(`Error:${res.status}`);
+        localStorage.removeItem("token");
         setUser(null);
         setIsLogin(false);
-        localStorage.removeItem("token");
-        toast.success("logout successful");
 
-    } catch (error) {
-        
-    }
-    return <div><Toaster/></div>
+        toast.success("Logout successful");
+
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+
+      } catch (error) {
+        console.error("Logout error:", error);
+
+        toast.error("Logout failed. Please try again.");
+
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 2000);
+      }
+    };
+
+    handleLogout();
+  }, [navigate, setUser, setIsLogin]);
+
+  return <Toaster />;
 }
 
-export default logout
+export default Logout;

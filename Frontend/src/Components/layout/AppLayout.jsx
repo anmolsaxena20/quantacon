@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from "react";
-import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, Link, useNavigate, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import AICoach from "@/components/features/AICoach";
 import { Toaster } from "@/components/ui/sonner";
@@ -23,7 +23,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "next-themes";
 import NotificationBell from "@/components/features/NotificationBell";
 import { useNotificationStore } from "@/lib/store";
-import { AuthContextProvider } from "../../Context/AuthContext";
+import useAuth, { AuthContextProvider } from "../../Context/AuthContext";
+import logout from "@/Pages/LogoutPage";
 export default function AppLayout() {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const location = useLocation();
@@ -155,7 +156,7 @@ export default function AppLayout() {
                                     variant="ghost"
                                     size="icon"
                                     className="h-9 w-9 hover:bg-background/50 hover:text-red-500"
-                                    onClick={() => navigate("/login")}
+                                    onClick={() => navigate("/logout")}
                                     title="Log out"
                                 >
                                     <LogOut className="h-5 w-5" />
@@ -175,7 +176,6 @@ export default function AppLayout() {
                         </Button>
                         <div className="font-heading text-xl font-bold bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">Pulse Fit</div>
                     </div>
-
                     <div className="flex items-center gap-2">
                         <NotificationBell />
                         <Button
