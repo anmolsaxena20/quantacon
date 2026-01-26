@@ -13,16 +13,20 @@ const userSchema = new mongoose.Schema(
     // Either email or phone is required
     email: {
       type: String,
+      unique: true,
       lowercase: true,
       trim: true,
       sparse: true,
       match: [/^\S+@\S+\.\S+$/, "Invalid email address"],
     },
-
+    refreshToken: {
+      type: String,
+    },
     phone: {
       type: String,
+      unique: true,
       sparse: true,
-      match: [/^\d{10,15}$/, "Invalid phone number"],
+      match: [/^\+\d{10,15}$/, "Invalid phone number"],
     },
 
     password: {
@@ -65,11 +69,9 @@ const userSchema = new mongoose.Schema(
 );
 
 // Ensure at least one of email or phone exists
-userSchema.pre("validate", function (next) {
+userSchema.pre("validate", function () {
   if (!this.email && !this.phone) {
-    next(new Error("Either email or phone number is required"));
-  } else {
-    next();
+    throw new Error("Either email or phone number is required");
   }
 });
 

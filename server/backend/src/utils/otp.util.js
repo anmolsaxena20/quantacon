@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import smsClient from "../config/twilio.config.js";
-import mailTransporter from "../config/nodemailer.config.js";
-import Otp from "../models/Otp.js";
+// import mailTransporter from "../config/nodemailer.config.js";
+import Otp from "../models/otp.model.js";
 const OTP_LENGTH = 6;
 const OTP_EXPIRY_MINUTES = 5;
 const MAX_ATTEMPTS = 5;
@@ -25,7 +25,6 @@ export const createOtp = async ({ userId, purpose }) => {
   const expiresAt = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000);
 
   await Otp.create({ userId, otpHash, purpose, expiresAt });
-
   return otp;
 };
 
@@ -56,25 +55,27 @@ export const verifyOtp = async ({ userId, purpose, inputOtp }) => {
 export const sendOtp = async (destination, otp) => {
   try {
     if (isPhone(destination)) {
-      await smsClient.messages.create({
-        body: `Your OTP is ${otp}. It expires in 5 minutes.`,
-        from: process.env.TWILIO_PHONE_NUMBER,
-        to: destination,
-      });
+      console.log("phone no detected");
+      smsClient.messages
+        .create({
+          body: `Your OTP is ${otp}. It expires in 5 minutes.`,
+          from: process.env.TWILIO_PHONE_NUMBER,
+          to: destination,
+        })
+        .then((msg) => console.log("SMS sent:", msg.sid))
+        .catch((err) => console.log("Twilio error:", err.message));
       return true;
     }
-
-    if (isEmail(destination)) {
-      await mailTransporter.sendMail({
-        from: process.env.EMAIL_USER,
-        to: destination,
-        subject: "Your Verification OTP",
-        text: `Your OTP is ${otp}. It expires in 5 minutes.`,
-      });
-      return true;
-    }
-
-    throw new Error("Invalid destination");
+    //  else if (isEmail(destination)) {
+    //   await mailTransporter.sendMail({
+    //     from: process.env.EMAIL_USER,
+    //     to: destination,
+    //     subject: "Your Verification OTP",
+    //     text: `Your OTP is ${otp}. It expires in 5 minutes.`,
+    //   });
+    //   return true;
+    // }
+    throw new Error("Invalid email or phone format");
   } catch (err) {
     console.error("OTP send failed:", err.message);
     throw new Error("Failed to send OTP");

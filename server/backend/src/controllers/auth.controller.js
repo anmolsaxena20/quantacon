@@ -9,8 +9,10 @@ import {
 /* -------------------- SIGNUP -------------------- */
 export const signup = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    let { name, email, phone, password } = req.body;
 
+    if (phone) phone = phone.trim();
+    if (email) email = email.trim();
     if (!name || !password || (!email && !phone)) {
       return res.status(400).json({ message: "Missing required fields" });
     }
@@ -30,10 +32,10 @@ export const signup = async (req, res) => {
       authProvider: "local",
       isVerified: false,
     });
+    console.log("signup request received\n");
 
     const otp = await createOtp({ userId: user._id, purpose: "signup" });
     await sendOtp(email || phone, otp);
-
     res.json({ message: "OTP sent for verification", userId: user._id });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -47,9 +49,35 @@ export const verifySignupOtp = async (req, res) => {
 
     await verifyOtp({ userId, purpose: "signup", inputOtp: otp });
 
-    await User.findByIdAndUpdate(userId, { isVerified: true });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        isVerified: true,
+        lastLogin: new Date(),
+      },
+      { new: true },
+    );
 
-    res.json({ message: "Account verified successfully" });
+    let accessToken = generateAccessToken({
+      id: user._id,
+      tier: user.tier,
+    });
+    let refreshToken = generateRefreshToken({
+      id: user._id,
+      tier: user.tier,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // change to true in production (HTTPS)
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      accessToken,
+      user: { id: user._id, name: user.name, tier: user.tier },
+    });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
@@ -81,17 +109,21 @@ export const login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    const accessToken = generateAccessToken({ id: user._id });
-    const refreshToken = generateRefreshToken({ id: user._id });
+    let accessToken = generateAccessToken({ id: user._id, tier: user.tier });
+    let refreshToken = generateRefreshToken({
+      id: user._id,
+      tier: user.tier,
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.json({
       accessToken,
-      refreshToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        tier: user.tier,
-      },
+      user: { id: user._id, name: user.name, tier: user.tier },
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
