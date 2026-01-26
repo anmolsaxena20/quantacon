@@ -67,45 +67,7 @@ export default function Dashboard() {
                     <motion.div variants={item}>
                         <EnergySelector />
                     </motion.div>
-
-                    <motion.div variants={item} whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                        <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-card to-primary/5 cursor-pointer">
-                            <CardHeader>
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <Badge className="mb-2 bg-primary/20 text-primary hover:bg-primary/30">Strength Focus</Badge>
-                                        <CardTitle className="text-2xl">Upper Body Power</CardTitle>
-                                        <CardDescription>Estimated time: 30 mins â€¢ Difficulty: Moderate</CardDescription>
-                                    </div>
-                                    <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground shadow-glow animate-pulse">
-                                        <Clock className="h-6 w-6" />
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-2">
-                                    {[
-                                        { name: "Push-ups", sets: "3 sets x 12 reps" },
-                                        { name: "Dumbbell Press", sets: "3 sets x 10 reps" },
-                                        { name: "Lateral Raises", sets: "3 sets x 15 reps" }
-                                    ].map((ex, i) => (
-                                        <div key={i} className="flex justify-between items-center p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
-                                            <span className="font-medium">{i + 1}. {ex.name}</span>
-                                            <span className="text-muted-foreground">{ex.sets}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <Button size="lg" className="w-full text-lg shadow-lg shadow-primary/20 group" onClick={() => window.location.href = '/workout'}>
-                                    <PlayCircle className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" /> Start Workout
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </motion.div>
                 </div>
-
-
                 <div className="space-y-6">
                     <motion.div variants={item}>
                         <Card>
@@ -142,7 +104,7 @@ export default function Dashboard() {
                                         <p className="text-xs text-muted-foreground">500 XP to Level 4</p>
                                     </div>
                                 </div>
-                                <Progress value={65} className="mt-4 h-2" />
+                                <Progress value={66} className="mt-4 h-2" />
                             </CardContent>
                         </Card>
                     </motion.div>

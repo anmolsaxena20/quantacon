@@ -34,9 +34,9 @@ export default function AppLayout() {
         { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
         { icon: Dumbbell, label: "Workout", path: "/workout" },
         { icon: PenTool, label: "Create Plan", path: "/create-workout" },
-        { icon: Users, label: "Community", path: "/community" },
+        { icon: Users, label: "Community", path: "/community/social" },
         { icon: TrendingUp, label: "Progress", path: "/progress" },
-        { icon: UserCircle, label: "Profile", path: "/profile-setup" },
+        { icon: UserCircle, label: "Profile", path: "community/profile-setup" },
     ];
 
     const { addNotification } = useNotificationStore();
@@ -48,7 +48,7 @@ export default function AppLayout() {
         if (!hasSeenWelcome) {
             setTimeout(() => {
                 addNotification({
-                    title: "Welcome to Pulse Fit! âš¡",
+                    title: "Welcome to Pulse Fit!",
                     message: "Ready to crush your goals? Check out the new AI Workout generator on your dashboard.",
                     type: "info"
                 });

@@ -9,6 +9,11 @@ import ProgressPage from "@/pages/Progress";
 import Community from "@/pages/Community";
 import Signup from "./Pages/SignupPage";
 import { AuthContextProvider } from "./Context/AuthContext";
+import Profile from "./Pages/Profile";
+import Chat from "./Pages/Chat";
+import { ChatStoreProvider } from "./Context/ChatStore";
+import Chats from "./Pages/Chats";
+import CommunityLayout from "./Components/layout/CommunityLayout"
 function App() {
     return (
         <BrowserRouter>
@@ -19,12 +24,17 @@ function App() {
                     <Route path="workout" element={<Workout />} />
                     <Route path="create-workout" element={<WorkoutCreator />} />
                     <Route path="progress" element={<ProgressPage />} />
-                    <Route path="community" element={<Community />} />
-                    <Route path="profile-setup" element={<ProfileSetup />} />
+                    <Route path="community/profile-setup" element={<ProfileSetup />} />
                 </Route>
-               
+                <Route path='/community' element={<ChatStoreProvider><CommunityLayout /></ChatStoreProvider>}>
+                    <Route path="social" element={<Community />} />
+                    <Route path="chats" element={<Chats />} />
+                    <Route path="chat/:id" element={<Chat />} />
+                    <Route path="profile" element={<Profile />} />
+                </Route>
+
                 <Route path="/login" element={<AuthContextProvider><Login /></AuthContextProvider>} />
-                 <Route path="/signup" element={<AuthContextProvider><Signup /></AuthContextProvider>} />
+                <Route path="/signup" element={<AuthContextProvider><Signup /></AuthContextProvider>} />
             </Routes>
         </BrowserRouter>
     );
