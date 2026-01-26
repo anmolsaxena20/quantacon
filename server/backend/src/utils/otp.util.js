@@ -6,12 +6,8 @@ const OTP_LENGTH = 6;
 const OTP_EXPIRY_MINUTES = 5;
 const MAX_ATTEMPTS = 5;
 
-/* ------------------ HELPERS ------------------ */
-
 const isEmail = (value) => /\S+@\S+\.\S+/.test(value);
 const isPhone = (value) => /^\+\d{10,15}$/.test(value);
-
-/* ------------------ OTP LOGIC ------------------ */
 
 export const generateOtp = () =>
   Math.floor(
@@ -45,12 +41,9 @@ export const verifyOtp = async ({ userId, purpose, inputOtp }) => {
     await otpDoc.save();
     throw new Error("Invalid OTP");
   }
-
   await otpDoc.deleteOne();
   return true;
 };
-
-/* ------------------ SEND OTP ------------------ */
 
 export const sendOtp = async (destination, otp) => {
   try {

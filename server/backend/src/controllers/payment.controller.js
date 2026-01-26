@@ -3,13 +3,12 @@ import razorpayInstance from "../config/razorpay.config.js";
 import User from "../models/user.model.js";
 import strict from "assert/strict";
 
-/* ---------- CREATE ORDER ---------- */
 export const createOrder = async (req, res) => {
   try {
-    const { amount } = req.body; // in rupees
+    const { amount } = req.body;
 
     const options = {
-      amount: amount * 100, // paise
+      amount: amount * 100,
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     };
@@ -27,7 +26,6 @@ export const createOrder = async (req, res) => {
   }
 };
 
-/* ---------- VERIFY PAYMENT ---------- */
 export const verifyPayment = async (req, res) => {
   try {
     const {
@@ -63,7 +61,6 @@ export const verifyPayment = async (req, res) => {
       tier: user.tier,
     });
 
-    // (optional but good) store latest refresh token in DB
     user.refreshToken = refreshToken;
     await user.save();
 

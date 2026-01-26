@@ -1,12 +1,11 @@
 import User from "../models/user.model.js";
 import { hashPassword, comparePassword } from "../utils/hash.util.js";
-import { createOtp, verifyOtp, sendOtp } from "../utils/otp.util.js";
+import { sendOtp, verifyOtp, createOtp } from "../utils/otp.util.js";
 import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/jwt.util.js";
 
-/* -------------------- SIGNUP -------------------- */
 export const signup = async (req, res) => {
   try {
     let { name, email, phone, password } = req.body;
@@ -42,7 +41,6 @@ export const signup = async (req, res) => {
   }
 };
 
-/* ---------------- VERIFY SIGNUP OTP ---------------- */
 export const verifySignupOtp = async (req, res) => {
   try {
     const { userId, otp } = req.body;
@@ -69,7 +67,7 @@ export const verifySignupOtp = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // change to true in production (HTTPS)
+      secure: false,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -83,7 +81,6 @@ export const verifySignupOtp = async (req, res) => {
   }
 };
 
-/* -------------------- LOGIN -------------------- */
 export const login = async (req, res) => {
   try {
     const { email, phone, password } = req.body;
