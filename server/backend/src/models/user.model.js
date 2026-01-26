@@ -26,6 +26,9 @@ const userSchema = new mongoose.Schema(
       sparse: true,
       match: [/^\+\d{10,15}$/, "Invalid phone number"],
     },
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    isVerifiedUser: { type: Boolean, default: false },
 
     password: {
       type: String,

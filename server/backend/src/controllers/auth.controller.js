@@ -1,6 +1,6 @@
 import User from "../models/user.model.js";
 import { hashPassword, comparePassword } from "../utils/hash.util.js";
-import { sendSmsOtp, checkSmsOtp } from "../utils/otp.util.js";
+import { sendOtp, verifyOtp, createOtp } from "../utils/otp.util.js";
 import {
   generateAccessToken,
   generateRefreshToken,
