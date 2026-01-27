@@ -11,7 +11,7 @@ function OAuthSuccessPage() {
     const token = params.get("token");
 
     if (token) {
-      localStorage.setItem("authToken", token);
+      localStorage.setItem("token", token);
       navigate("/dashboard");
     } else {
       navigate("/login");

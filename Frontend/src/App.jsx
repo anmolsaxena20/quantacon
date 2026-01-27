@@ -27,7 +27,7 @@ function App() {
                     <Route path="workout" element={<Workout />} />
                     <Route path="create-workout" element={<WorkoutCreator />} />
                     <Route path="progress" element={<ProgressPage />} />
-                    <Route path="community/profile-setup" element={<ProfileSetup />} />
+                    <Route path="community/profile-setup" element={<Profile />} />
                     <Route path = "logout" element={<Logout/>}/>
                 </Route>
                 <Route path='/community' element={<ChatStoreProvider><CommunityLayout /></ChatStoreProvider>}>

@@ -8,6 +8,33 @@ import { Chrome, ArrowRight, User } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import useAuth from "../Context/AuthContext";
 
+
+const fetchUserDetail = async()=>{
+    
+    try {
+        const token = localStorage.getItem("token");
+        if(!token){
+            toast.error("invalid user");
+            return;
+        }
+        const res = await fetch("http://localhost:5000/api/users/me",
+            {
+                method:"GET",
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            }
+        )
+        if(!res.ok) throw new Error("error in fetching detail")
+        const detail = await res.json();
+       console.log("fetched user",detail);
+    setUser(detail);
+    setIsLogin(true);
+    } catch (error) {
+        console.log("error",error)
+    }
+}
+
 export default function Login() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +66,7 @@ export default function Login() {
             localStorage.setItem("token", user.accessToken);
 
             setIsLoading(false);
-            setUser(user);
+            await fetchUserDetail();
             setIsLogin(true);
             console.log("user access token", user.accessToken)
             navigate("/dashboard");
@@ -110,3 +137,6 @@ export default function Login() {
         </div>
     );
 }
+
+
+
