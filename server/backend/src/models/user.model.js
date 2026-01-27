@@ -18,13 +18,13 @@ const userSchema = new mongoose.Schema(
       match: [/^\S+@\S+\.\S+$/, "Invalid email address"],
     },
     picture: {
-      type: String, // Cloudinary URL
+      type: String,
       default:
         "https://res.cloudinary.com/djd94qxqr/image/upload/v1767083795/default_yzzskf.png",
     },
 
     picturePublicId: {
-      type: String, // Cloudinary public_id
+      type: String,
       default: "default_yzzskf",
     },
     refreshToken: {

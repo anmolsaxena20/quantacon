@@ -1,6 +1,10 @@
 import User from "../models/user.model.js";
 import { hashPassword, comparePassword } from "../utils/hash.util.js";
-import { sendOtp, verifyOtp, createOtp } from "../utils/otp.util.js";
+import {
+  createEmailOtp,
+  sendEmailOtp,
+  verifyEmailOtp,
+} from "../utils/otp.util.js";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -31,10 +35,8 @@ export const signup = async (req, res) => {
       authProvider: "local",
       isVerified: false,
     });
-    console.log("signup request received\n");
-
-    const otp = await createOtp({ userId: user._id, purpose: "signup" });
-    await sendOtp(email || phone, otp);
+    const otp = await createEmailOtp({ userId: user._id, purpose: "signup" });
+    await sendEmailOtp(email, otp);
     res.json({ message: "OTP sent for verification", userId: user._id });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -44,9 +46,7 @@ export const signup = async (req, res) => {
 export const verifySignupOtp = async (req, res) => {
   try {
     const { userId, otp } = req.body;
-
-    await verifyOtp({ userId, purpose: "signup", inputOtp: otp });
-
+    await verifyEmailOtp({ userId, purpose: "signup", inputOtp: otp });
     const user = await User.findByIdAndUpdate(
       userId,
       {
