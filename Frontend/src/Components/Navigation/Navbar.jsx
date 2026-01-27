@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MessageCircle, Clapperboard, User, House } from "lucide-react";
+import { Search, MessageCircle, Clapperboard, User, House,Upload } from "lucide-react";
 import { useState } from "react";
 import UserSearch from "../search/UserSearch";
 
@@ -22,6 +22,9 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           <button onClick={() => navigate("/dashboard")}>
             <House className="w-5 h-5" />
+          </button>
+           <button onClick={() => navigate("reel")}>
+            <Upload className="w-5 h-5" />
           </button>
           <button onClick={() => setShowSearch(!showSearch)}>
             <Search className="w-5 h-5" />

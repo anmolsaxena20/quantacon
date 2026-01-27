@@ -18,7 +18,7 @@ export default function UserSearch() {
   return (
     <input
       placeholder="Search users"
-      //onChange={(e) => debouncedSearch(e.target.value)}
+      onChange={(e) => debouncedSearch(e.target.value)}
       className="w-full p-3 rounded-lg bg-muted"
     />
   );

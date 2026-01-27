@@ -20,7 +20,7 @@ function Logout() {
       }
 
       try {
-        const res = await fetch("http://localhost:5000/auth/logout", {
+        const res = await fetch("http://localhost:5000/api/users/logout", {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

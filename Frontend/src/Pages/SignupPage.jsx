@@ -36,7 +36,7 @@ export default function Signup() {
   const [weight, setWeight] = useState("");
   const [otp, setOtp] = useState("");
   const[userId,setUserId] = useState(null);
-  const {setIsLogin,setUser} = useAuth();
+  
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);

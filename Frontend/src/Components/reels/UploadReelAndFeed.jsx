@@ -15,15 +15,16 @@ export default function CreatePostReel() {
   const [reelFile, setReelFile] = useState(null);
 
   const [loading, setLoading] = useState(false);
+  const[posting,setPosting] = useState(false);
 
   const createPost = async (e) => {
     e.preventDefault();
     if (!postFile) return toast.error("Select an image");
 
-    setLoading(true);
+    setPosting(true);
     const formData = new FormData();
     formData.append("caption", postCaption);
-    formData.append("file", postFile);
+    formData.append("media", postFile);
 
     try {
       const res = await fetch(`http://localhost:5000/api/social/post`, {
@@ -40,7 +41,7 @@ export default function CreatePostReel() {
     } catch {
       toast.error("Post failed");
     } finally {
-      setLoading(false);
+      setPosting(false);
     }
   };
 
@@ -51,7 +52,7 @@ export default function CreatePostReel() {
     setLoading(true);
     const formData = new FormData();
     formData.append("caption", reelCaption);
-    formData.append("file", reelFile);
+    formData.append("media", reelFile);
 
     try {
       const res = await fetch(`http://localhost:5000/api/social/reel`, {
@@ -74,7 +75,6 @@ export default function CreatePostReel() {
 
   return (
     <div className="max-w-lg mx-auto space-y-8 p-4">
-      {/* CREATE POST */}
       <Card className="bg-card/80 backdrop-blur">
         <CardHeader>
           <CardTitle>Create Post</CardTitle>
@@ -92,15 +92,13 @@ export default function CreatePostReel() {
               onChange={(e) => setPostFile(e.target.files[0])}
             />
             <Button className="w-full" disabled={loading}>
-              {loading ? "Posting..." : "Post"}
+              {posting ? "Posting..." : "Post"}
             </Button>
           </form>
         </CardContent>
       </Card>
 
       <Separator />
-
-      {/* CREATE REEL */}
       <Card className="bg-card/80 backdrop-blur">
         <CardHeader>
           <CardTitle>Create Reel</CardTitle>

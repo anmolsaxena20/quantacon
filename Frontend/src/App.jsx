@@ -16,6 +16,7 @@ import Chats from "./Pages/Chats";
 import CommunityLayout from "./Components/layout/CommunityLayout"
 import Logout from "./Pages/LogoutPage";
 import OAuthSuccessPage from "./Pages/Oauth";
+import CreatePostReel from "./Components/reels/UploadReelAndFeed";
 function App() {
     return (
         <BrowserRouter>
@@ -34,6 +35,7 @@ function App() {
                     <Route path="chats" element={<Chats />} />
                     <Route path="chat/:id" element={<Chat />} />
                     <Route path="profile" element={<Profile />} />
+                    <Route path="reel" element={<CreatePostReel />} />
                 </Route>
 
                 <Route path="/login" element={<AuthContextProvider><Login /></AuthContextProvider>} />
