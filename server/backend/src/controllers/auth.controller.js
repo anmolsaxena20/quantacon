@@ -75,7 +75,6 @@ export const verifySignupOtp = async (req, res) => {
 
     res.json({
       accessToken,
-      user: { id: user._id, name: user.name, tier: user.tier },
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -122,7 +121,6 @@ export const login = async (req, res) => {
 
     res.json({
       accessToken,
-      user: { id: user._id, name: user.name, tier: user.tier },
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
