@@ -31,9 +31,9 @@ async def generate_workout_llm(
         Workout dictionary with warmup, main, and cooldown sections
     """
     # Import here to avoid circular dependencies
-    from gemini_client import call_gemini_with_fallback
-    from gemini_prompt import build_workout_prompt, validate_workout_response
-    from fallback_workout import fallback_workout
+    from ai_logic.gemini_client import call_gemini_with_fallback
+    from ai_logic.gemini_prompt import build_workout_prompt, validate_workout_response
+    from ai_logic.fallback_workout import fallback_workout
 
     # Build the prompt
     prompt = build_workout_prompt(
