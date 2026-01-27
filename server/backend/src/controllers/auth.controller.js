@@ -55,7 +55,6 @@ export const verifySignupOtp = async (req, res) => {
       },
       { new: true },
     );
-
     const accessToken = generateAccessToken({
       id: user._id,
       tier: user.tier,
@@ -64,6 +63,8 @@ export const verifySignupOtp = async (req, res) => {
       id: user._id,
       tier: user.tier,
     });
+    user.refreshToken = refreshToken;
+    await user.save();
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -104,13 +105,14 @@ export const login = async (req, res) => {
     }
 
     user.lastLogin = new Date();
-    await user.save();
 
     const accessToken = generateAccessToken({ id: user._id, tier: user.tier });
     const refreshToken = generateRefreshToken({
       id: user._id,
       tier: user.tier,
     });
+    user.refreshToken = refreshToken;
+    await user.save();
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
