@@ -37,6 +37,7 @@ function App() {
 
                 <Route path="/login" element={<AuthContextProvider><Login /></AuthContextProvider>} />
                 <Route path="/signup" element={<AuthContextProvider><Signup /></AuthContextProvider>} />
+                <Route path="/oauth-success" element={<Dashboard/>} />
             </Routes>
         </BrowserRouter>
     );

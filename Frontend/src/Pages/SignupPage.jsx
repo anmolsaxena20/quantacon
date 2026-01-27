@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { GoogleLogin } from "@react-oauth/google";
 import {
   Card,
   CardContent,
@@ -19,6 +20,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight, UserPlus, Chrome } from "lucide-react";
 import { toast, Toaster } from "sonner";
+import useAuth from "@/Context/AuthContext";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ export default function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    const { isLogin, setUser } = useAuth();
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/signup", {
@@ -90,6 +93,31 @@ export default function Signup() {
       setIsLoading(false);
     }
   };
+ const handleGoogleSuccess = async (credentialResponse) => {
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/google", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token: credentialResponse.credential,
+      }),
+    });
+
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+
+    localStorage.setItem("token", data.accessToken);
+    toast.success("Signed in with Google");
+
+    navigate("/dashboard");
+  } catch {
+    toast.error("Google signup failed");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
@@ -133,13 +161,13 @@ export default function Signup() {
                 placeholder="Height (cm)"
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
-                
+
               />
               <Input
                 placeholder="Weight (kg)"
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
-                
+
               />
               <Input
                 type="password"
@@ -187,9 +215,12 @@ export default function Signup() {
                 <Separator />
               </div>
 
-              <Button variant="outline" className="w-full">
-                <Chrome className="mr-2 h-4 w-4" /> Continue with Google
-              </Button>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => toast.error("Google Login Failed")}
+                theme="outline"
+                size="large"
+              />
 
               <Button
                 variant="ghost"
