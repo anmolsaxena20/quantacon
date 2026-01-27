@@ -56,11 +56,11 @@ export const verifySignupOtp = async (req, res) => {
       { new: true },
     );
 
-    let accessToken = generateAccessToken({
+    const accessToken = generateAccessToken({
       id: user._id,
       tier: user.tier,
     });
-    let refreshToken = generateRefreshToken({
+    const refreshToken = generateRefreshToken({
       id: user._id,
       tier: user.tier,
     });
@@ -106,8 +106,8 @@ export const login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    let accessToken = generateAccessToken({ id: user._id, tier: user.tier });
-    let refreshToken = generateRefreshToken({
+    const accessToken = generateAccessToken({ id: user._id, tier: user.tier });
+    const refreshToken = generateRefreshToken({
       id: user._id,
       tier: user.tier,
     });
@@ -128,6 +128,28 @@ export const login = async (req, res) => {
 };
 export const oauthSuccess = async (req, res) => {
   try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: "OAuth failed" });
+    }
+    const accessToken = generateAccessToken({
+      id: user._id,
+      tier: user.tier,
+    });
+    const refreshToken = generateRefreshToken({
+      id: user._id,
+      tier: user.tier,
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.json({
+      accessToken,
+      user: { id: user._id, name: user.name, tier: user.tier },
+    });
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "oauth handling failed" });
