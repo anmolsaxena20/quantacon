@@ -13,7 +13,7 @@ export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
     const[email,setEmail] = useState("");
     const[password,setPassword] = useState("");
-    const {user,setIslogin,setUser} = useAuth();
+    const {user,setIsLogin,setUser} = useAuth();
 
     const handleLogin = async(e) => {
         e.preventDefault();
@@ -21,7 +21,7 @@ export default function Login() {
 
         try {
             const data = {email:email,password:password}
-            const res = await fetch("http://localhost:5000/auth/login",
+            const res = await fetch("http://localhost:5000/api/auth/login",
                 {
                     method:"POST",
                     headers:{
@@ -37,12 +37,13 @@ export default function Login() {
             const user = await res.json();
             toast.success("login successful")
             localStorage.setItem("token",user.accessToken);
-            setTimeout(() => {
+            
             setIsLoading(false);
             setUser(user);
-            setIslogin(true);
+            setIsLogin(true);
+            console.log("user access token",user.accessToken)
             navigate("/dashboard");
-        }, 1500);
+            
         } catch (error) {
             console.log("Error in login",error)
             navigate("/login");

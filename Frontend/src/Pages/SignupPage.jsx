@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { GoogleLogin } from "@react-oauth/google";
+
 import {
   Card,
   CardContent,
@@ -27,6 +27,7 @@ export default function Signup() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isOtp, setIsOtp] = useState(false);
+  const { isLogin, setUser } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -34,10 +35,12 @@ export default function Signup() {
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [otp, setOtp] = useState("");
+  const[userId,setUserId] = useState(null);
+  const {setIsLogin,setUser} = useAuth();
   const handleSignup = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const { isLogin, setUser } = useAuth();
+
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/signup", {
@@ -51,11 +54,12 @@ export default function Signup() {
           weight,
         }),
       });
-
+      const data = await res.json();
       if (!res.ok) throw new Error("Signup failed");
 
       toast.success("OTP sent to your email");
       setIsOtp(true);
+      setUserId(data.userId)
     } catch (error) {
       console.error(error);
       toast.error("Signup failed");
@@ -76,16 +80,16 @@ export default function Signup() {
       const res = await fetch("http://localhost:5000/api/auth/verify-signup-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ userId, otp }),
       });
 
       if (!res.ok) throw new Error("OTP verification failed");
 
       toast.success("Account verified successfully");
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
+      setIsLogin(true);
+        navigate("/dashboard");
+    
     } catch (error) {
       console.error(error);
       toast.error("Invalid OTP");
@@ -93,30 +97,6 @@ export default function Signup() {
       setIsLoading(false);
     }
   };
- const handleGoogleSuccess = async (credentialResponse) => {
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/google", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        token: credentialResponse.credential,
-      }),
-    });
-
-    if (!res.ok) throw new Error();
-
-    const data = await res.json();
-
-    localStorage.setItem("token", data.accessToken);
-    toast.success("Signed in with Google");
-
-    navigate("/dashboard");
-  } catch {
-    toast.error("Google signup failed");
-  }
-};
 
 
   return (
@@ -215,12 +195,11 @@ export default function Signup() {
                 <Separator />
               </div>
 
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => toast.error("Google Login Failed")}
-                theme="outline"
-                size="large"
-              />
+              <Button 
+              onClick = {()=>window.location.href = "http://localhost:5000/api/auth/google"}
+              variant="outline" type="button" disabled={isLoading} className="w-full">
+                <Chrome className="mr-2 h-4 w-4" /> Google
+              </Button>
 
               <Button
                 variant="ghost"

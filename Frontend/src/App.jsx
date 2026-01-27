@@ -15,6 +15,7 @@ import { ChatStoreProvider } from "./Context/ChatStore";
 import Chats from "./Pages/Chats";
 import CommunityLayout from "./Components/layout/CommunityLayout"
 import Logout from "./Pages/LogoutPage";
+import OAuthSuccessPage from "./Pages/Oauth";
 function App() {
     return (
         <BrowserRouter>
@@ -37,7 +38,7 @@ function App() {
 
                 <Route path="/login" element={<AuthContextProvider><Login /></AuthContextProvider>} />
                 <Route path="/signup" element={<AuthContextProvider><Signup /></AuthContextProvider>} />
-                <Route path="/oauth-success" element={<Dashboard/>} />
+                <Route path="/oauth-success" element={<OAuthSuccessPage/>} />
             </Routes>
         </BrowserRouter>
     );
