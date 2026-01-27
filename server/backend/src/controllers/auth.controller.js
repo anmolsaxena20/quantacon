@@ -1,6 +1,10 @@
 import User from "../models/user.model.js";
 import { hashPassword, comparePassword } from "../utils/hash.util.js";
-import { sendOtp, verifyOtp, createOtp } from "../utils/otp.util.js";
+import {
+  createEmailOtp,
+  sendEmailOtp,
+  verifyEmailOtp,
+} from "../utils/otp.util.js";
 import {
   generateAccessToken,
   generateRefreshToken,
@@ -31,10 +35,8 @@ export const signup = async (req, res) => {
       authProvider: "local",
       isVerified: false,
     });
-    console.log("signup request received\n");
-
-    const otp = await createOtp({ userId: user._id, purpose: "signup" });
-    await sendOtp(email || phone, otp);
+    const otp = await createEmailOtp({ userId: user._id, purpose: "signup" });
+    await sendEmailOtp(email, otp);
     res.json({ message: "OTP sent for verification", userId: user._id });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -44,9 +46,7 @@ export const signup = async (req, res) => {
 export const verifySignupOtp = async (req, res) => {
   try {
     const { userId, otp } = req.body;
-
-    await verifyOtp({ userId, purpose: "signup", inputOtp: otp });
-
+    await verifyEmailOtp({ userId, purpose: "signup", inputOtp: otp });
     const user = await User.findByIdAndUpdate(
       userId,
       {
@@ -55,15 +55,16 @@ export const verifySignupOtp = async (req, res) => {
       },
       { new: true },
     );
-
-    let accessToken = generateAccessToken({
+    const accessToken = generateAccessToken({
       id: user._id,
       tier: user.tier,
     });
-    let refreshToken = generateRefreshToken({
+    const refreshToken = generateRefreshToken({
       id: user._id,
       tier: user.tier,
     });
+    user.refreshToken = refreshToken;
+    await user.save();
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -104,13 +105,14 @@ export const login = async (req, res) => {
     }
 
     user.lastLogin = new Date();
-    await user.save();
 
-    let accessToken = generateAccessToken({ id: user._id, tier: user.tier });
-    let refreshToken = generateRefreshToken({
+    const accessToken = generateAccessToken({ id: user._id, tier: user.tier });
+    const refreshToken = generateRefreshToken({
       id: user._id,
       tier: user.tier,
     });
+    user.refreshToken = refreshToken;
+    await user.save();
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
@@ -124,5 +126,32 @@ export const login = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+export const oauthSuccess = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({ message: "OAuth failed" });
+    }
+    const accessToken = generateAccessToken({
+      id: user._id,
+      tier: user.tier,
+    });
+    const refreshToken = generateRefreshToken({
+      id: user._id,
+      tier: user.tier,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // true in production
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.redirect(`http://localhost:5173/oauth-success?token=${accessToken}`);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "oauth handling failed" });
   }
 };
