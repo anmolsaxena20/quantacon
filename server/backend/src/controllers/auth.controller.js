@@ -142,16 +142,15 @@ export const oauthSuccess = async (req, res) => {
       id: user._id,
       tier: user.tier,
     });
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: false, // true in production
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.json({
-      accessToken,
-      user: { id: user._id, name: user.name, tier: user.tier },
-    });
+
+    res.redirect(`http://localhost:5173/oauth-success?token=${accessToken}`);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "oauth handling failed" });
