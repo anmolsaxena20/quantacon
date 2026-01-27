@@ -126,3 +126,10 @@ export const login = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+export const oauthSuccess = async (req, res) => {
+  try {
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ message: "oauth handling failed" });
+  }
+};
