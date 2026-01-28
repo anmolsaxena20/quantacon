@@ -8,6 +8,7 @@ import {
   addComment,
   getFeed,
   getReels,
+  searchUsersByName,
 } from "../controllers/social.controller.js";
 
 const router = express.Router();
@@ -15,6 +16,7 @@ const router = express.Router();
 router.post("/post", upload.single("media"), createPost);
 router.post("/like/:postId", toggleLikePost);
 router.post("/comment/:postId", addComment);
+router.post("/user", searchUsersByName);
 router.post("/reel", upload.single("media"), createReel);
 router.get("/reels", getReels);
 router.post("/follow/:id", followUser);

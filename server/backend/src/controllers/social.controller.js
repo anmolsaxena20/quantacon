@@ -24,7 +24,7 @@ export const createPost = async (req, res) => {
 
 export const searchUsersByName = async (req, res) => {
   try {
-    const { query } = req.query;
+    const { query } = req.body;
     if (!query) {
       return res.status(400).json({ message: "Search query required" });
     }
