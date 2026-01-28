@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useState ,useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,31 +9,6 @@ import { toast, Toaster } from "sonner";
 import useAuth from "../Context/AuthContext";
 
 
-const fetchUserDetail = async()=>{
-    
-    try {
-        const token = localStorage.getItem("token");
-        if(!token){
-            toast.error("invalid user");
-            return;
-        }
-        const res = await fetch("http://localhost:5000/api/users/me",
-            {
-                method:"GET",
-                headers:{
-                    "Authorization":`Bearer ${token}`
-                }
-            }
-        )
-        if(!res.ok) throw new Error("error in fetching detail")
-        const detail = await res.json();
-       console.log("fetched user",detail);
-    setUser(detail);
-    setIsLogin(true);
-    } catch (error) {
-        console.log("error",error)
-    }
-}
 
 export default function Login() {
     const navigate = useNavigate();
@@ -52,7 +27,8 @@ export default function Login() {
                 {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json"
+                         "Content-Type": "application/json",
+                        
                     },
                     body: JSON.stringify(data)
                 }
@@ -61,14 +37,13 @@ export default function Login() {
                 toast.error("login failed");
                 throw new Error("Error in login");
             }
-            const user = await res.json();
+            const loginUser = await res.json();
             toast.success("login successful")
-            localStorage.setItem("token", user.accessToken);
+            localStorage.setItem("token", loginUser.accessToken);
 
-            setIsLoading(false);
-            await fetchUserDetail();
+            setIsLoading(false); 
             setIsLogin(true);
-            console.log("user access token", user.accessToken)
+            console.log("user access token", loginUser.accessToken)
             navigate("/dashboard");
 
         } catch (error) {

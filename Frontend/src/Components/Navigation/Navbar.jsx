@@ -38,7 +38,7 @@ export default function Navbar() {
             <MessageCircle className="w-5 h-5" />
           </button>
 
-          <button onClick={() => navigate("profile-setup")}>
+          <button onClick={() => navigate("/community/profile-setup")}>
             <User className="w-5 h-5" />
           </button>
         </div>

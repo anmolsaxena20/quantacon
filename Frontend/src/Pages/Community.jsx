@@ -23,6 +23,7 @@ export default function Community() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
+      console.log("fetched feed",data)
       setPosts(data);
     } catch {
       toast.error("Failed to load feed");

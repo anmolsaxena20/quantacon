@@ -27,7 +27,7 @@ export default function Signup() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isOtp, setIsOtp] = useState(false);
-  const { isLogin, setUser } = useAuth();
+  const { setIsLogin, setUser } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -52,14 +52,17 @@ export default function Signup() {
           password,
           height,
           weight,
-        }),
+        })
       });
       const data = await res.json();
+      console.log("data received in signup",data);
       if (!res.ok) throw new Error("Signup failed");
-
       toast.success("OTP sent to your email");
-      setIsOtp(true);
+      setTimeout(()=>{
+        setIsOtp(true);
       setUserId(data.userId)
+      },500);
+      
     } catch (error) {
       console.error(error);
       toast.error("Signup failed");
@@ -95,9 +98,34 @@ export default function Signup() {
       toast.error("Invalid OTP");
     } finally {
       setIsLoading(false);
+      await getUserDetails();
     }
   };
 
+ const getUserDetails = async()=>{
+    try {
+      const token = localStorage.getItem("token");
+      if(!token) return;
+      const res = await fetch("http://localhost:5000/api/users/me",
+        {
+          method:"GET",
+          headers:{
+             "Content-Type": "application/json",
+            "Authorization":`Bearer ${token}`
+          }
+        }
+      )
+      if(!res.ok) {
+        toast.error("error in fetching user details");
+        throw new Error(`Error${res.text}`)
+      }
+      const userDetail = await res.json();
+      console.log("fetched user detail",userDetail);
+      setUser(userDetail);
+    } catch (error) {
+      console.log("Error in fetching the issue")
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">

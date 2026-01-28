@@ -3,7 +3,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
+import {Toaster, toast } from "sonner";
+
 
 export default function CreatePostReel() {
   const token = localStorage.getItem("token");
@@ -76,6 +77,7 @@ export default function CreatePostReel() {
   return (
     <div className="max-w-lg mx-auto space-y-8 p-4">
       <Card className="bg-card/80 backdrop-blur">
+      <Toaster/>
         <CardHeader>
           <CardTitle>Create Post</CardTitle>
         </CardHeader>
@@ -91,7 +93,7 @@ export default function CreatePostReel() {
               accept="image/*"
               onChange={(e) => setPostFile(e.target.files[0])}
             />
-            <Button className="w-full" disabled={loading}>
+            <Button className="w-full" disabled={posting}>
               {posting ? "Posting..." : "Post"}
             </Button>
           </form>
@@ -112,7 +114,7 @@ export default function CreatePostReel() {
             />
             <Input
               type="file"
-              accept="video/*"
+              accept="video/*image/*"
               onChange={(e) => setReelFile(e.target.files[0])}
             />
             <Button className="w-full" disabled={loading}>

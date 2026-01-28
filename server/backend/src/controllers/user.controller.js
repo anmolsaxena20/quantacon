@@ -24,13 +24,12 @@ export const logout = async (req, res) => {
 };
 export const getUserDetails = async (req, res) => {
   try {
-    const { id } = req.params;
-
+    const { id } = req.user;
     if (!id) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    const user = await User.findById().select(
+    const user = await User.findById(id).select(
       "-password -picturePublicId -refreshToken",
     );
 

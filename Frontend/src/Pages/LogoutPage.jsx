@@ -15,7 +15,7 @@ function Logout() {
         setTimeout(()=>{
             toast.error("Invalid session");
             navigate("/dashboard");
-        },2000)
+        },1000)
         return;
       }
 
@@ -38,7 +38,7 @@ function Logout() {
 
         setTimeout(() => {
           navigate("/login");
-        }, 2000);
+        }, 1000);
 
       } catch (error) {
         console.error("Logout error:", error);

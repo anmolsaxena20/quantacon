@@ -2,14 +2,13 @@
 import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import Login from "@/pages/Login";
-import ProfileSetup from "@/pages/ProfileSetup";
+import ProfileSetup from "@/Pages/Profile";
 import Workout from "@/pages/Workout";
 import WorkoutCreator from "@/pages/WorkoutCreator";
 import ProgressPage from "@/pages/Progress";
 import Community from "@/pages/Community";
 import Signup from "./Pages/SignupPage";
 import { AuthContextProvider } from "./Context/AuthContext";
-import Profile from "./Pages/Profile";
 import Chat from "./Pages/Chat";
 import { ChatStoreProvider } from "./Context/ChatStore";
 import Chats from "./Pages/Chats";
@@ -27,14 +26,14 @@ function App() {
                     <Route path="workout" element={<Workout />} />
                     <Route path="create-workout" element={<WorkoutCreator />} />
                     <Route path="progress" element={<ProgressPage />} />
-                    <Route path="community/profile-setup" element={<Profile />} />
+                    <Route path="community/profile-setup" element={<ProfileSetup />} />
                     <Route path = "logout" element={<Logout/>}/>
                 </Route>
                 <Route path='/community' element={<ChatStoreProvider><CommunityLayout /></ChatStoreProvider>}>
                     <Route path="social" element={<Community />} />
                     <Route path="chats" element={<Chats />} />
                     <Route path="chat/:id" element={<Chat />} />
-                    <Route path="profile" element={<Profile />} />
+                    <Route path="/community/profile-setup" element={<ProfileSetup />} />
                     <Route path="reel" element={<CreatePostReel />} />
                 </Route>
 
