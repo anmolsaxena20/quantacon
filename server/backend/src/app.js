@@ -6,6 +6,7 @@ import paymentRoutes from "./routes/payment.routes.js";
 import socialRoutes from "./routes/social.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import { requireAuth } from "./middlewares/auth.middleware.js";
+import { allowTiers } from "./middlewares/tier.middleware.js";
 import passport from "./config/passport.config.js";
 const app = express();
 

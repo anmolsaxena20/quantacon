@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema(
       default:
         "https://res.cloudinary.com/djd94qxqr/image/upload/v1767083795/default_yzzskf.png",
     },
+    gender: {
+      type: String,
+      default: "Prefer not to say",
+      enum: ["male", "female", "prefer not to say"],
+    },
 
     picturePublicId: {
       type: String,
@@ -39,7 +44,9 @@ const userSchema = new mongoose.Schema(
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     isVerifiedUser: { type: Boolean, default: false },
-
+    dob: {
+      type: Date,
+    },
     password: {
       type: String,
       required: function () {
@@ -62,7 +69,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       sparse: true,
     },
-
     isVerified: {
       type: Boolean,
       default: false,
