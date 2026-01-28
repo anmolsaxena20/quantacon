@@ -7,6 +7,7 @@ import Workout from "@/pages/Workout";
 import WorkoutCreator from "@/pages/WorkoutCreator";
 import ProgressPage from "@/pages/Progress";
 import Community from "@/pages/Community";
+import PricingSync from "@/Pages/Pricing";
 import Signup from "./Pages/SignupPage";
 import { AuthContextProvider } from "./Context/AuthContext";
 import Chat from "./Pages/Chat";
@@ -27,8 +28,10 @@ function App() {
                     <Route path="workout" element={<Workout />} />
                     <Route path="create-workout" element={<WorkoutCreator />} />
                     <Route path="progress" element={<ProgressPage />} />
+                    <Route path="progress" element={<ProgressPage />} />
                     <Route path="community/profile-setup" element={<ProfileSetup />} />
-                    <Route path = "logout" element={<Logout/>}/>
+                    <Route path="pricing" element={<PricingSync />} />
+                    <Route path="logout" element={<Logout />} />
                 </Route>
                 <Route path='/community' element={<ChatStoreProvider><CommunityLayout /></ChatStoreProvider>}>
                     <Route path="social" element={<Community />} />
@@ -36,12 +39,12 @@ function App() {
                     <Route path="chat/:id" element={<Chat />} />
                     <Route path="/community/profile-setup" element={<ProfileSetup />} />
                     <Route path="reel" element={<CreatePostReel />} />
-                     <Route path="search" element={<UserSearch />} />
+                    <Route path="search" element={<UserSearch />} />
                 </Route>
 
                 <Route path="/login" element={<AuthContextProvider><Login /></AuthContextProvider>} />
                 <Route path="/signup" element={<AuthContextProvider><Signup /></AuthContextProvider>} />
-                <Route path="/oauth-success" element={<OAuthSuccessPage/>} />
+                <Route path="/oauth-success" element={<OAuthSuccessPage />} />
             </Routes>
         </BrowserRouter>
     );

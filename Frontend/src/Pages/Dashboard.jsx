@@ -34,7 +34,7 @@ export default function Dashboard() {
         show: { opacity: 1, y: 0 }
     };
 
-    const{user} = useAuth();
+    const { user } = useAuth();
     return (
         <motion.div
             variants={container}
@@ -44,7 +44,7 @@ export default function Dashboard() {
         >
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <motion.div variants={item}>
-                    <h1 className="text-3xl font-heading font-bold">Good Morning, {user?user.name:"Guest"}</h1>
+                    <h1 className="text-3xl font-heading font-bold">Good Morning, {user ? user.name : "Guest"}</h1>
                     <p className="text-muted-foreground">Ready to keep your streak alive?</p>
                 </motion.div>
                 <motion.div
@@ -58,12 +58,15 @@ export default function Dashboard() {
                         <Flame className="h-4 w-4 mr-1 text-orange-500" /> 5 Day Streak
                     </Badge>
                 </motion.div>
+                <div className="flex gap-2">
+                    <Button onClick={() => window.location.href = "/pricing"}>Upgrade Plan</Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 <div className="md:col-span-2 space-y-6">
-                
+
                     <motion.div variants={item}>
                         <EnergySelector />
                     </motion.div>

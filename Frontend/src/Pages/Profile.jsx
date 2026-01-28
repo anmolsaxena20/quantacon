@@ -9,13 +9,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Camera } from "lucide-react";
-import {Toaster, toast } from "sonner";
+import { Toaster, toast } from "sonner";
 import useAuth from "../Context/AuthContext";
 
 export default function Profile() {
   const [editing, setEditing] = useState(false);
-  const {user,setUser} = useAuth()
-console.log("fetched user inprofile",user)
+  const { user, setUser } = useAuth()
+  console.log("fetched user inprofile", user)
   const [profile, setProfile] = useState({
     name: "Guest User",
     email: "guest@pulsefit.com",
@@ -28,26 +28,26 @@ console.log("fetched user inprofile",user)
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  useEffect(()=>{
-   const fetchProfile = async () => {
+  useEffect(() => {
+    const fetchProfile = async () => {
 
       setProfile({
         name: user.name,
         email: user.email,
         height: user.height || "175",
-        weight: user.weight ||"75",
-        image: user.picture ||"",
+        weight: user.weight || "75",
+        image: user.picture || "",
       });
 
-  };
-  fetchProfile();
+    };
+    fetchProfile();
 
-   
-  },[user])
+
+  }, [user])
 
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto text-white">
-        <Toaster/>
+      <Toaster />
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Profile</h1>
         <p className="text-muted-foreground text-sm">
@@ -74,7 +74,7 @@ console.log("fetched user inprofile",user)
         </CardHeader>
 
         <CardContent className="grid gap-6 mt-4">
-         
+
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm text-muted-foreground">Name</label>
@@ -128,10 +128,7 @@ console.log("fetched user inprofile",user)
           <div className="flex gap-3 justify-end pt-4">
             {editing ? (
               <>
-                <Button
-                  variant="ghost"
-                  onClick={() => setEditing(false)}
-                >
+                <Button variant="ghost" onClick={() => setEditing(false)}>
                   Cancel
                 </Button>
                 <Button className="bg-purple-600 hover:bg-purple-700">
@@ -139,12 +136,20 @@ console.log("fetched user inprofile",user)
                 </Button>
               </>
             ) : (
-              <Button
-                className="bg-purple-600 hover:bg-purple-700"
-                onClick={() => setEditing(true)}
-              >
-                Edit Profile
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => window.location.href = "/pricing"}
+                >
+                  Manage Subscription
+                </Button>
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={() => setEditing(true)}
+                >
+                  Edit Profile
+                </Button>
+              </div>
             )}
           </div>
         </CardContent>
