@@ -5,6 +5,7 @@ import strict from "assert/strict";
 
 export const createOrder = async (req, res) => {
   try {
+    console.log("order received");
     const { amount } = req.body;
 
     const options = {
@@ -14,7 +15,6 @@ export const createOrder = async (req, res) => {
     };
 
     const order = await razorpayInstance.orders.create(options);
-
     res.json({
       orderId: order.id,
       amount: order.amount,
