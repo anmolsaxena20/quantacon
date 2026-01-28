@@ -114,7 +114,7 @@ export default function CreatePostReel() {
             />
             <Input
               type="file"
-              accept="video/*image/*"
+              accept="video/*,image/*"
               onChange={(e) => setReelFile(e.target.files[0])}
             />
             <Button className="w-full" disabled={loading}>

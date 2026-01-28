@@ -19,11 +19,11 @@ export default function Community() {
   const fetchFeed = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/social/feed", {
-        method:"GET",
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      console.log("fetched feed",data)
+      console.log("fetched feed", data)
       setPosts(data);
     } catch {
       toast.error("Failed to load feed");
@@ -33,17 +33,18 @@ export default function Community() {
   const fetchReels = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/social/reels", {
-        method:"GET",
+        method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
+      console.log("fetched reel", data)
       setReels(data);
     } catch {
       toast.error("Failed to load reels");
     }
   };
 
- 
+
   const handleLike = async (postId) => {
     try {
       await fetch(`http://localhost:5000/api/social/like/${postId}`, {
@@ -77,7 +78,7 @@ export default function Community() {
 
   return (
     <div className="max-w-xl mx-auto p-4 space-y-4">
-     
+
       <div className="flex justify-around border-b">
         <button onClick={() => setTab("feed")} className={tab === "feed" ? "font-bold" : ""}>
           Feed
@@ -87,7 +88,7 @@ export default function Community() {
         </button>
       </div>
 
-     
+
       {tab === "feed" &&
         posts.map((post) => (
           <Card key={post._id} className="p-3 space-y-2">
@@ -116,7 +117,7 @@ export default function Community() {
           </Card>
         ))}
 
-      
+
       {tab === "reels" && (
         <div className="space-y-6">
           {reels.map((reel) => (
@@ -132,6 +133,15 @@ export default function Community() {
                 <p className="font-semibold">{reel.author.name}</p>
                 <p className="text-sm">{reel.caption}</p>
               </div>
+              <div className="flex items-center gap-4">
+                <button onClick={() => handleLike(reel._id)}>
+                  <Heart />
+                </button>
+                <MessageCircle />
+                <span>{reel.likes.length} likes</span>
+              </div>
+
+              <CommentBox onSubmit={(text) => handleComment(reel._id, text)} />
             </div>
           ))}
         </div>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import UserSearch from "../search/UserSearch";
 
 export default function Navbar() {
-  const [showSearch, setShowSearch] = useState(false);
+
   const navigate = useNavigate();
 
   return (
@@ -26,7 +26,7 @@ export default function Navbar() {
            <button onClick={() => navigate("reel")}>
             <Upload className="w-5 h-5" />
           </button>
-          <button onClick={() => setShowSearch(!showSearch)}>
+          <button onClick={() => navigate("/community/search")}>
             <Search className="w-5 h-5" />
           </button>
 
@@ -43,8 +43,6 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-
-      {showSearch && <UserSearch />}
     </nav>
   );
 }
