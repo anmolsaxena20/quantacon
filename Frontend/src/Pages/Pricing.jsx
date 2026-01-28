@@ -50,12 +50,18 @@ const PricingSync = () => {
             navigate("/login");
             return;
         }
-
+        const token = localStorage.getItem("token");
+        if(!token){
+            toast.error("invalid session");
+            return;
+        }
         setLoading(true);
         try {
             const orderRes = await fetch("http://localhost:5000/api/payment/create-order", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                    "Authorization":`Bearer ${token}`
+                 },
                 body: JSON.stringify({amount})
             });
             const orderData = await orderRes.json();
@@ -73,7 +79,10 @@ const PricingSync = () => {
                     try {
                         const verifyRes = await fetch("http://localhost:5000/api/payment/verify", {
                             method: "POST",
-                            headers: { "Content-Type": "application/json" },
+                            headers: { 
+                                "Content-Type": "application/json" ,
+                                "Authorization":`Bearer ${token}`
+                            },
                             body: JSON.stringify({
                                 razorpay_order_id: response.razorpay_order_id,
                                 razorpay_payment_id: response.razorpay_payment_id,
@@ -88,6 +97,7 @@ const PricingSync = () => {
                             toast.success("Payment Successful! Welcome to " + planId + " tier.");
                             navigate("/dashboard");
                         } else {
+                            console.log("error hai",verifyData.message )
                             toast.error(verifyData.message || "Payment verification failed");
                         }
                     } catch (error) {
