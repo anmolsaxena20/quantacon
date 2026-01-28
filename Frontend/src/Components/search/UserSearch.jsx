@@ -25,8 +25,31 @@ export default function UserSearch() {
 
     return () => clearTimeout(timer);
   }, [query]);
-  const followUser = async()=>{
-    // ata hu to karunga 
+  const followUser = async(userId)=>{
+    console.log("userId",userId)
+    try {
+      const token = localStorage.getItem("token");
+      if(!token){
+        toast.error("invalid session");
+        return;
+      }
+      const res = await fetch(`http://localhost:5000/api/social/follow/${userId}`,
+        {
+          method:"POST",
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        }
+      )
+      const ifo = await res.json();
+      console.log("message",ifo)
+      if(!res.ok){
+        toast.error("error in response")
+      }
+      toast.success("user followed successfully");
+    } catch (error) {
+      console.log("Error while following the user")
+    }
   }
 
   const fetchUsers = async () => {
@@ -116,8 +139,10 @@ export default function UserSearch() {
               </CardHeader>
 
               <CardContent className="pt-0">
-                <button className="text-sm text-primary hover:underline">
-                  View Profile
+                <button 
+                onClick={()=>followUser(user._id)}
+                className="text-sm text-primary hover:underline">
+                  follow 
                 </button>
               </CardContent>
             </Card>

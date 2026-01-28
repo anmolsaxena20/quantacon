@@ -89,7 +89,8 @@ export default function Signup() {
       if (!res.ok) throw new Error("OTP verification failed");
 
       toast.success("Account verified successfully");
-
+      const data = await res.json();
+      localStorage.setItem("token",data.accessToken);
       setIsLogin(true);
         navigate("/dashboard");
     
@@ -102,30 +103,6 @@ export default function Signup() {
     }
   };
 
- const getUserDetails = async()=>{
-    try {
-      const token = localStorage.getItem("token");
-      if(!token) return;
-      const res = await fetch("http://localhost:5000/api/users/me",
-        {
-          method:"GET",
-          headers:{
-             "Content-Type": "application/json",
-            "Authorization":`Bearer ${token}`
-          }
-        }
-      )
-      if(!res.ok) {
-        toast.error("error in fetching user details");
-        throw new Error(`Error${res.text}`)
-      }
-      const userDetail = await res.json();
-      console.log("fetched user detail",userDetail);
-      setUser(userDetail);
-    } catch (error) {
-      console.log("Error in fetching the issue")
-    }
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">

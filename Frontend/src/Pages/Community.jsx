@@ -46,11 +46,14 @@ export default function Community() {
 
 
   const handleLike = async (postId) => {
+    console.log("postId",postId)
     try {
-      await fetch(`http://localhost:5000/api/social/like/${postId}`, {
+      const res = await fetch(`http://localhost:5000/api/social/like/${postId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
+      const info = await res.json();
+      console.log("get info",info);
       fetchFeed();
     } catch {
       toast.error("Like failed");
@@ -130,18 +133,18 @@ export default function Community() {
                 muted
               />
               <div className="absolute bottom-3 left-3 text-white">
-                <p className="font-semibold">{reel.author.name}</p>
+                <p className="font-semibold">{reel.author?.name}</p>
                 <p className="text-sm">{reel.caption}</p>
               </div>
               <div className="flex items-center gap-4">
-                <button onClick={() => handleLike(reel._id)}>
+                <button onClick={() => handleLike(reel?._id)}>
                   <Heart />
                 </button>
                 <MessageCircle />
                 <span>{reel.likes.length} likes</span>
               </div>
 
-              <CommentBox onSubmit={(text) => handleComment(reel._id, text)} />
+              <CommentBox onSubmit={(text) => handleComment(reel?._id, text)} />
             </div>
           ))}
         </div>
