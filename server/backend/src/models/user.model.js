@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       default: "Prefer not to say",
-      enum: ["male", "female", "prefer not to say"],
+      enum: ["male", "female", "Prefer not to say"],
     },
 
     picturePublicId: {

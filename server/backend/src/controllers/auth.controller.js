@@ -12,16 +12,17 @@ import {
 
 export const signup = async (req, res) => {
   try {
+    console.log("signup request received");
     let { name, email, phone, password } = req.body;
-
     if (phone) phone = phone.trim();
     if (email) email = email.trim();
     if (!name || !password || (!email && !phone)) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log("existing user");
       return res.status(400).json({ message: "User already exists" });
     }
 
