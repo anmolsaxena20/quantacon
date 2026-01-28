@@ -22,20 +22,38 @@ export const createPost = async (req, res) => {
   }
 };
 
+export const searchUsersByName = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({ message: "Search query required" });
+    }
+    const users = await User.find({
+      name: { $regex: `^${query}`, $options: "i" },
+    })
+      .select("-password -refreshToken")
+      .limit(10);
+    res.json({ users });
+  } catch (err) {
+    console.error("User search error:", err.message);
+    res.status(500).json({ message: "Search failed" });
+  }
+};
+
 export const createReel = async (req, res) => {
   try {
     const file = req.file;
     const { caption } = req.body;
-    console.log("req.file",req.file);
-console.log("req.file",file);
+    console.log("req.file", req.file);
+    console.log("req.file", file);
     const upload = await uploadToCloudinary(file.buffer, "reels");
-console.log("upload",upload)
+    console.log("upload", upload);
     const reel = await Reel.create({
       author: req.user.id,
       videoUrl: upload.secure_url,
       caption,
     });
-    console.log("reel in backend",reel)
+    console.log("reel in backend", reel);
     res.json(reel);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -50,8 +68,12 @@ export const followUser = async (req, res) => {
       return res.status(400).json({ message: "Cannot follow yourself" });
     }
 
-    await User.findByIdAndUpdate(userId, { $addToSet: { following: targetId } });
-    await User.findByIdAndUpdate(targetId, { $addToSet: { followers: userId } });
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { following: targetId },
+    });
+    await User.findByIdAndUpdate(targetId, {
+      $addToSet: { followers: userId },
+    });
 
     res.json({ message: "Followed successfully" });
   } catch (err) {
