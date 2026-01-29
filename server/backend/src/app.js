@@ -6,6 +6,7 @@ import paymentRoutes from "./routes/payment.routes.js";
 import socialRoutes from "./routes/social.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import workoutRoutes from "./routes/workout.routes.js";
+import calendarRoutes from "./routes/calendar.routes.js";
 import { requireAuth } from "./middlewares/auth.middleware.js";
 import { allowTiers } from "./middlewares/tier.middleware.js";
 import passport from "./config/passport.config.js";
@@ -18,6 +19,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/calendar",calendarRoutes);
 app.use("/api/payment", requireAuth, paymentRoutes);
 app.use("/api/social", requireAuth, socialRoutes);
 app.use("/api/users", requireAuth, userRoutes);

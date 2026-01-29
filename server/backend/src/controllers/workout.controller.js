@@ -157,7 +157,7 @@ export const createWorkoutAlarm = async (req, res) => {
     if (err.message === "Google reconnect required") {
       return res.status(401).json({
         reconnectGoogle: true,
-        authUrl: "/api/workout/google",
+        authUrl: "/api/calendar/google",
         method: "GET",
       });
     }
