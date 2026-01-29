@@ -44,16 +44,12 @@ export const createReel = async (req, res) => {
   try {
     const file = req.file;
     const { caption } = req.body;
-    console.log("req.file", req.file);
-    console.log("req.file", file);
     const upload = await uploadToCloudinary(file.buffer, "reels");
-    console.log("upload", upload);
     const reel = await Reel.create({
       author: req.user.id,
       videoUrl: upload.secure_url,
       caption,
     });
-    console.log("reel in backend", reel);
     res.json(reel);
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -40,9 +40,6 @@ export const generateWorkout = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-import WorkoutSession from "../models/workoutSession.model.js";
-import UserStats from "../models/userStats.model.js";
-
 export const completeWorkout = async (req, res) => {
   try {
     const userId = req.user.id;
