@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,57 +14,142 @@ import useAuth from "../Context/AuthContext";
 
 export default function Profile() {
   const [editing, setEditing] = useState(false);
-  const { user, setUser } = useAuth()
-  console.log("fetched user inprofile", user)
+  const { user, setUser } = useAuth();
+
+  const fileInputRef = useRef(null);
+
   const [profile, setProfile] = useState({
-    name: "Guest User",
-    email: "guest@pulsefit.com",
-    height: "175",
-    weight: "72",
+    name: "",
+    email: "",
+    height: "",
+    weight: "",
     image: "",
+    gender: "",
   });
+
+  const [imageFile, setImageFile] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+
+    setProfile({
+      name: user.name,
+      email: user.email,
+      height: user.height || "175",
+      weight: user.weight || "75",
+      image: user.picture || "",
+      gender: user.gender || "",
+    });
+  }, [user]);
 
   const handleChange = (e) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  useEffect(() => {
-    const fetchProfile = async () => {
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-      setProfile({
-        name: user.name,
-        email: user.email,
-        height: user.height || "175",
-        weight: user.weight || "75",
-        image: user.picture || "",
+    setImageFile(file);
+    setProfile((prev) => ({
+      ...prev,
+      image: URL.createObjectURL(file),
+    }));
+  };
+
+  const updateProfile = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return toast.error("Invalid session");
+
+    try {
+      const res = await fetch("http://localhost:5000/api/users/me", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: profile.name,
+          height: profile.height,
+          weight: profile.weight,
+          gender: profile.gender,
+        }),
       });
 
-    };
-    fetchProfile();
+      if (!res.ok) throw new Error();
 
+      const data = await res.json();
+      setUser(data.user);
+      toast.success("Profile updated");
+    } catch {
+      toast.error("Failed to update profile");
+    } finally {
+      setEditing(false);
+    }
+  };
 
-  }, [user])
+ const updateProfilePicture = async () => {
+  if (!imageFile) return toast.error("Select an image first");
+
+  const token = localStorage.getItem("token");
+  if (!token) return toast.error("Invalid session");
+
+  const formData = new FormData();
+  formData.append("media", imageFile); 
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users/profile", {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error();
+
+    setUser(data.user); 
+    toast.success("Profile picture updated");
+  } catch {
+    toast.error("Failed to update picture");
+  }
+};
+
 
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto text-white">
       <Toaster />
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">Profile</h1>
-        <p className="text-muted-foreground text-sm">
-          Manage your personal information
-        </p>
-      </div>
 
       <Card className="bg-card/80 backdrop-blur border-border/50">
         <CardHeader className="flex flex-row items-center gap-6">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-600 to-violet-500 flex items-center justify-center text-3xl font-bold">
-              {profile.name.charAt(0)}
-            </div>
-
-            <button className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center">
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-violet-500 flex items-center justify-center">
+              {profile.image ? (
+                <img
+                  src={profile.image}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-3xl font-bold">
+                  {profile.name?.[0]}
+                </span>
+              )}
+               <button
+              onClick={() => fileInputRef.current.click()}
+              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center"
+            >
+              <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleImageSelect}
+            />
               <Camera size={16} />
             </button>
+            </div>
           </div>
 
           <div>
@@ -74,82 +159,36 @@ export default function Profile() {
         </CardHeader>
 
         <CardContent className="grid gap-6 mt-4">
-
           <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-muted-foreground">Name</label>
-              <Input
-                name="name"
-                value={profile.name}
-                onChange={handleChange}
-                disabled={!editing}
-                className="bg-background/50"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-muted-foreground">Email</label>
-              <Input
-                name="email"
-                value={profile.email}
-                disabled
-                className="bg-background/50"
-              />
-            </div>
+            <Input name="name" value={profile.name} onChange={handleChange} disabled={!editing} />
+            <Input name="email" value={profile.email} disabled />
           </div>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="text-sm text-muted-foreground">
-                Height (cm)
-              </label>
-              <Input
-                name="height"
-                value={profile.height}
-                onChange={handleChange}
-                disabled={!editing}
-                className="bg-background/50"
-              />
-            </div>
-
-            <div>
-              <label className="text-sm text-muted-foreground">
-                Weight (kg)
-              </label>
-              <Input
-                name="weight"
-                value={profile.weight}
-                onChange={handleChange}
-                disabled={!editing}
-                className="bg-background/50"
-              />
-            </div>
+            <Input name="height" value={profile.height} onChange={handleChange} disabled={!editing} />
+            <Input name="weight" value={profile.weight} onChange={handleChange} disabled={!editing} />
           </div>
-          <div className="flex gap-3 justify-end pt-4">
+
+          <div className="flex justify-end gap-3">
+            {imageFile && (
+              <Button onClick={updateProfilePicture} variant="outline">
+                Save Picture
+              </Button>
+            )}
+
             {editing ? (
               <>
                 <Button variant="ghost" onClick={() => setEditing(false)}>
                   Cancel
                 </Button>
-                <Button className="bg-purple-600 hover:bg-purple-700">
+                <Button className="bg-purple-600" onClick={updateProfile}>
                   Save Changes
                 </Button>
               </>
             ) : (
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => window.location.href = "/pricing"}
-                >
-                  Manage Subscription
-                </Button>
-                <Button
-                  className="bg-purple-600 hover:bg-purple-700"
-                  onClick={() => setEditing(true)}
-                >
-                  Edit Profile
-                </Button>
-              </div>
+              <Button className="bg-purple-600" onClick={() => setEditing(true)}>
+                Edit Profile
+              </Button>
             )}
           </div>
         </CardContent>
