@@ -76,14 +76,12 @@ export const updateBasicInfo = async (req, res) => {
 export const updateProfilePicture = async (req, res) => {
   try {
     const userId = req.user.id;
-    if (!req.file) {
+    const file = req.file;
+    if (!file) {
       return res.status(400).json({ message: "Image required" });
     }
     const user = await User.findById(userId);
-    if (user.picturePublicId) {
-      await deleteFromCloudinary(user.picturePublicId);
-    }
-    const upload = await uploadToCloudinary(req.file.path);
+    const upload = await uploadToCloudinary(file.buffer, "profile");
     user.picture = upload.secure_url;
     user.picturePublicId = upload.public_id;
     await user.save();

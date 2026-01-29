@@ -12,7 +12,7 @@ const router = express.Router();
 router.post("/logout", logout);
 router.get("/me", getUserDetails);
 router.put("/me", updateBasicInfo);
-router.put("/profie", upload.single("media"), updateProfilePicture);
+router.put("/profile", upload.single("media"), updateProfilePicture);
 router.post("/request-otp", requestPasswordOtp);
 router.post("/update-password", updatePassword);
 export default router;
