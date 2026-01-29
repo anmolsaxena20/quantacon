@@ -2,6 +2,10 @@ import crypto from "crypto";
 import razorpayInstance from "../config/razorpay.config.js";
 import User from "../models/user.model.js";
 import strict from "assert/strict";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/jwt.util.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -48,9 +52,10 @@ export const verifyPayment = async (req, res) => {
     }
     const user = await User.findByIdAndUpdate(
       userId,
-      { tier: pro },
+      { tier: "pro" },
       { new: true },
     );
+    console.log("payment verified");
     const accessToken = generateAccessToken({
       id: user._id,
       tier: user.tier,
@@ -67,10 +72,11 @@ export const verifyPayment = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
-      sameSite: strict,
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    console.log("tier updated successfully");
     res.json({
       message: "Payment successful, tier upgraded",
       accessToken,
