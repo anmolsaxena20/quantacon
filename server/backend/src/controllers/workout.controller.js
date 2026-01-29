@@ -122,7 +122,7 @@ export const oauthCalendarSuccess = async (req, res) => {
 };
 export const createWorkoutAlarm = async (req, res) => {
   try {
-    const user = await User.findById(req.body.id);
+    const user = await User.findById(req.user.id);
     const token = await getValidAccessToken(user);
     console.log("token=", token);
     const { title, dateTime } = req.body;
