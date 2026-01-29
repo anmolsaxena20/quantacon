@@ -206,7 +206,7 @@ export GEMINI_API_KEY="your_api_key_here"
 
 ### 3. Start MongoDB
 ```bash
-# Using Docker
+# Using Dockerfile
 docker run -d -p 27017:27017 --name mongodb mongo:latest
 
 # Or use local MongoDB installation
@@ -216,7 +216,7 @@ mongod
 ### 4. Run Application
 ```bash
 # Development mode
-python app.py
+python app_old.py
 
 # Or with uvicorn directly
 uvicorn app:app --reload --host 0.0.0.0 --port 8000

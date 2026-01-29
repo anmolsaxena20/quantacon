@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Razorpay Test</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+  <body>
+    <h2>Razorpay Test Payment</h2>
+
+    <button onclick="handleBuyNow()">Pay ₹1 (Test)</button>
+
+    <script>
+      const API_BASE = "http://localhost:5000/api/payment";
+
+      async function handleBuyNow() {
+        try {
+          // 1️⃣ Create order
+          const res = await fetch(`${API_BASE}/create-order`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ amount: 1 }), // ₹1 test
+          });
+
+          const data = await res.json();
+          console.log("Order created:", data);
+
+          // 2️⃣ Razorpay Checkout
+          const options = {
+            key: data.key,
+            amount: data.amount,
+            currency: data.currency,
+            order_id: data.orderId,
+            name: "Quantacon Test",
+            description: "Pro Plan Test",
+
+            handler: async function (response) {
+              console.log("Payment success:", response);
+
+              // 3️⃣ Verify payment
+              const verifyRes = await fetch(`${API_BASE}/verify`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  ...response,
+                  userId: "PUT_USER_ID_HERE", // temporary
+                  plan: "pro",
+                }),
+              });
+
+              const verifyData = await verifyRes.json();
+              console.log("Verification:", verifyData);
+
+              alert("Payment successful 🎉");
+            },
+
+            theme: { color: "#3399cc" },
+          };
+
+          const rzp = new Razorpay(options);
+          rzp.open();
+        } catch (err) {
+          console.error(err);
+          alert("Payment flow error");
+        }
+      }
+    </script>
+  </body>
+</html>
