@@ -2,11 +2,11 @@
 """
 API routes for Desert Pulse workout generator.
 """
-
-from auth import router as auth_router
-from generate import router as generate_router
-from complete import router as complete_router
-from report import router as report_router
+# Change this in api/__init__.py:
+from api.auth import router as auth_router
+from api.generate import router as generate_router
+from api.complete import router as complete_router
+from api.report import router as report_router
 
 __all__ = [
     "auth_router",

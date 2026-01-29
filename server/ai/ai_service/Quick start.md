@@ -69,7 +69,7 @@ pip install -r requirements_updated.txt
 
 ### 2. Start MongoDB
 ```bash
-# Option A: Docker (Recommended)
+# Option A: Dockerfile (Recommended)
 docker run -d -p 27017:27017 --name mongodb mongo:latest
 
 # Option B: Local MongoDB
@@ -89,7 +89,7 @@ export GEMINI_API_KEY=your_api_key_here
 
 ### 4. Run Application
 ```bash
-python app.py
+python app_old.py
 ```
 
 Server starts at: http://localhost:8000
