@@ -8,15 +8,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { Camera } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import useAuth from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const [editing, setEditing] = useState(false);
   const { user, setUser } = useAuth();
 
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   const [profile, setProfile] = useState({
     name: "",
@@ -28,7 +36,10 @@ export default function Profile() {
   });
 
   const [imageFile, setImageFile] = useState(null);
-
+  const[isOtp,setIsOtp] = useState(false);
+  const [otp,setOtp] = useState("");
+  const[newPassword,setNewPassword] = useState("");
+const[isLoading,setIsLoading]= useState(false);
   useEffect(() => {
     if (!user) return;
 
@@ -117,6 +128,64 @@ export default function Profile() {
 };
 
 
+const handleOtpVerify = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return toast.error("Invalid session");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users/request-otp", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error();
+
+    toast.success("OTP sent to your email");
+    setIsOtp(true);
+  } catch (error) {
+    toast.error("Failed to send OTP");
+  }
+};
+
+const updatePassword = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return toast.error("Invalid session");
+
+  if (otp.length !== 6 || !newPassword) {
+    toast.error("OTP & new password required");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users/update-password", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ otp, newPassword:newPassword}),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error();
+
+    toast.success(data.message);
+    setIsOtp(false);
+    setOtp("");
+    setNewPassword("");
+  } catch {
+    toast.error("Password update failed");
+    navigate("/commuity/profile-setup")
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto text-white">
       <Toaster />
@@ -190,7 +259,37 @@ export default function Profile() {
                 Edit Profile
               </Button>
             )}
+             <Button className="bg-purple-600" onClick={handleOtpVerify}>
+                updatePassword
+              </Button>
           </div>
+           {isOtp && (
+                      <div className="space-y-4 text-center items-centre">
+                        <p className="text-sm text-muted-foreground">
+                          Enter the 6-digit OTP sent to your email
+                        </p>
+                        <div className = "flex justify-center items-center">
+                        <InputOTP
+                        value={otp} onChange={setOtp} maxLength={6}>
+                          <InputOTPGroup>
+                            {[0, 1, 2].map((i) => (
+                              <InputOTPSlot key={i} index={i} />
+                            ))}
+                          </InputOTPGroup>
+                          <InputOTPSeparator />
+                          <InputOTPGroup>
+                            {[3, 4, 5].map((i) => (
+                              <InputOTPSlot key={i} index={i} />
+                            ))}
+                          </InputOTPGroup>
+                        </InputOTP>
+                        </div>
+                            <Input name="newPassword" value={newPassword} required  onChange={(e)=>setNewPassword(e.target.value)} />
+                        <Button className="w-full" onClick={updatePassword} disabled={isLoading}>
+                          Verify OTP & Update Password
+                        </Button>
+                      </div>
+                    )}
         </CardContent>
       </Card>
     </div>

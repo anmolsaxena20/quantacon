@@ -174,7 +174,7 @@ export default function Signup() {
               <p className="text-sm text-muted-foreground">
                 Enter the 6-digit OTP sent to your email
               </p>
-
+              <div className="flex justify-center items-center">
               <InputOTP value={otp} onChange={setOtp} maxLength={6}>
                 <InputOTPGroup>
                   {[0, 1, 2].map((i) => (
@@ -188,6 +188,7 @@ export default function Signup() {
                   ))}
                 </InputOTPGroup>
               </InputOTP>
+              </div>
 
               <Button className="w-full" onClick={handleOtpVerify} disabled={isLoading}>
                 Verify OTP
