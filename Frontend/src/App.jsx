@@ -18,6 +18,8 @@ import Logout from "./Pages/LogoutPage";
 import OAuthSuccessPage from "./Pages/Oauth";
 import CreatePostReel from "./Components/reels/UploadReelAndFeed";
 import UserSearch from "./Components/search/UserSearch";
+import CreateWorkoutAlarm from "@/Pages/WorkoutAlarm"
+import NotFound from "./Pages/NotFoundPage";
 function App() {
     return (
         <BrowserRouter>
@@ -32,6 +34,7 @@ function App() {
                     <Route path="community/profile-setup" element={<ProfileSetup />} />
                     <Route path="pricing" element={<PricingSync />} />
                     <Route path="logout" element={<Logout />} />
+                    <Route path="workout-alarm" element={<CreateWorkoutAlarm/>}/>
                 </Route>
                 <Route path='/community' element={<ChatStoreProvider><CommunityLayout /></ChatStoreProvider>}>
                     <Route path="social" element={<Community />} />
@@ -45,6 +48,7 @@ function App() {
                 <Route path="/login" element={<AuthContextProvider><Login /></AuthContextProvider>} />
                 <Route path="/signup" element={<AuthContextProvider><Signup /></AuthContextProvider>} />
                 <Route path="/oauth-success" element={<OAuthSuccessPage />} />
+                <Route path ="*" element={<NotFound/>}/>
             </Routes>
         </BrowserRouter>
     );

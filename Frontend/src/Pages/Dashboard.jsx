@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import useAuth from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
     const handleStreakClick = () => {
@@ -18,6 +19,7 @@ export default function Dashboard() {
             },
         });
     };
+    const navigate = useNavigate();
 
     const container = {
         hidden: { opacity: 0 },
@@ -59,7 +61,10 @@ export default function Dashboard() {
                     </Badge>
                 </motion.div>
                 <div className="flex gap-2">
-                    <Button onClick={() => window.location.href = "/pricing"}>Upgrade Plan</Button>
+                    <Button onClick={() => navigate("/pricing")}>Upgrade Plan</Button>
+                </div>
+                 <div className="flex gap-2">
+                    <Button onClick={() => navigate("/workout-alarm")}>Set Alarm</Button>
                 </div>
             </div>
 
