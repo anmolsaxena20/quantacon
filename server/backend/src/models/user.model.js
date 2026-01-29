@@ -47,6 +47,10 @@ const userSchema = new mongoose.Schema(
     dob: {
       type: Date,
     },
+    googleCalendarConnected: { type: Boolean, default: false },
+    googleCalendarAccessToken: String,
+    googleCalendarRefreshToken: String,
+    googleTokenExpiry: Date,
     password: {
       type: String,
       required: function () {

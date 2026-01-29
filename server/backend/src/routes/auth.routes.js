@@ -13,11 +13,11 @@ router.post("/verify-signup-otp", verifySignupOtp);
 router.post("/login", login);
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["email", "profile"] }),
+  passport.authenticate("google-login", { scope: ["email", "profile"] }),
 );
 router.get(
   "/google/callback",
-  passport.authenticate("google", {
+  passport.authenticate("google-login", {
     session: false,
     failureRedirect: "/auth/google/failure",
   }),

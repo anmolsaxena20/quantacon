@@ -1,6 +1,9 @@
 import WorkoutSession from "../models/workoutSession.model.js";
 import UserStats from "../models/userStats.model.js";
+import User from "../models/user.model.js";
 import Exercise from "../models/exercise.model.js";
+import { getValidAccessToken } from "../utils/googleToken.util.js";
+import axios from "axios";
 export const generateWorkout = async (req, res) => {
   try {
     const { energyLevel } = req.body;
@@ -111,5 +114,54 @@ export const completeWorkout = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+export const oauthCalendarSuccess = async (req, res) => {
+  console.log("calendar access gained");
+  res.status(200).json({ message: "calendar access gained" });
+};
+export const createWorkoutAlarm = async (req, res) => {
+  try {
+    const user = await User.findById(req.body.id);
+    const token = await getValidAccessToken(user);
+    console.log("token=", token);
+    const { title, dateTime } = req.body;
+    const startTime = new Date(dateTime);
+    const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
+    if (isNaN(startTime)) {
+      return res.status(400).json({ error: "Invalid dateTime format " });
+    }
+    const result = await axios.post(
+      "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+      {
+        summary: title,
+        description: "Workout reminder from PulseNet 💪",
+        start: {
+          dateTime: startTime.toISOString(),
+          timeZone: "Asia/Kolkata",
+        },
+        end: {
+          dateTime: endTime.toISOString(),
+          timeZone: "Asia/Kolkata",
+        },
+        reminders: {
+          useDefault: false,
+          overrides: [{ method: "popup", minutes: 10 }],
+        },
+      },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    console.log(result);
+    res.status(200).json({ message: "alarm created successfully" });
+  } catch (err) {
+    if (err.message === "Google reconnect required") {
+      return res.status(401).json({
+        reconnectGoogle: true,
+        authUrl: "/api/workout/google",
+        method: "GET",
+      });
+    }
+    console.log(err.response?.data || err.message);
+    res.status(500).json({ error: "Failed to create alarm" });
   }
 };
