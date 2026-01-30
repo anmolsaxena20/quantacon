@@ -8,10 +8,12 @@ import {
   leaveGroup,
   addMember,
   removeMember,
+  createPrivateChat,
 } from "../controllers/chat.controller.js";
 import upload from "../middlewares/upload.middleware.js";
 const router = express.Router();
 router.get("/", getAllChatsByUser);
+router.post("/private", createPrivateChat);
 router.post("/create", createChat);
 router.get("/:chatId", getPreviousMessages);
 router.put("/make-admin", makeGroupChatAdmin);

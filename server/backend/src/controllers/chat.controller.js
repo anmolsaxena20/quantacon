@@ -7,12 +7,12 @@ export const getAllChatsByUser = async (req, res) => {
     const chats = await Chat.find({
       members: userId,
     })
-      .populate("members", "name profilePic")
+      .populate("members", "name picture")
       .populate({
         path: "lastMessage",
         populate: {
           path: "sender",
-          select: "name profilePic",
+          select: "name picture",
         },
       })
       .sort({ updatedAt: -1 });
@@ -42,8 +42,8 @@ export const createChat = async (req, res) => {
       groupAdmins: [creatorId],
     });
     const fullGroupChat = await Chat.findById(groupChat._id)
-      .populate("members", "name profilePic")
-      .populate("groupAdmins", "name profilePic");
+      .populate("members", "name picture")
+      .populate("groupAdmins", "name picture");
     res.status(201).json(fullGroupChat);
   } catch (error) {
     console.error("Create group chat error:", error);
@@ -65,7 +65,7 @@ export const getPreviousMessages = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
     const messages = await Message.find({ chatId })
-      .populate("sender", "name profilePic")
+      .populate("sender", "name picture")
       .sort({ createdAt: -1 })
       .limit(Number(limit));
     res.status(200).json(messages.reverse());
@@ -111,8 +111,8 @@ export const makeGroupChatAdmin = async (req, res) => {
     await chat.save();
 
     const updatedChat = await Chat.findById(chatId)
-      .populate("members", "name profilePic")
-      .populate("groupAdmins", "name profilePic");
+      .populate("members", "name picture")
+      .populate("groupAdmins", "name picture");
 
     res.status(200).json(updatedChat);
   } catch (error) {
@@ -138,6 +138,45 @@ export const uploadMedia = async (req, res) => {
     res.status(500).json({ message: "Media upload failed" });
   }
 };
+
+export const createPrivateChat = async (req, res) => {
+  try {
+    const { receiverId } = req.body;
+    const senderId = req.user.id;
+
+    if (!receiverId) {
+      return res.status(400).json({ message: "Receiver ID is required" });
+    }
+
+    if (receiverId === senderId) {
+      return res
+        .status(400)
+        .json({ message: "Cannot start chat with yourself" });
+    }
+    let chat = await Chat.findOne({
+      isGroupChat: false,
+      members: { $all: [senderId, receiverId], $size: 2 },
+    }).populate("members", "name picture");
+
+    if (chat) {
+      return res.status(200).json(chat);
+    }
+    chat = await Chat.create({
+      isGroupChat: false,
+      members: [senderId, receiverId],
+    });
+    const fullChat = await Chat.findById(chat._id).populate(
+      "members",
+      "name picture",
+    );
+
+    res.status(201).json(fullChat);
+  } catch (error) {
+    console.error("Create private chat error:", error);
+    res.status(500).json({ message: "Failed to create chat" });
+  }
+};
+
 export const leaveGroup = async (req, res) => {};
 export const addMember = async (req, res) => {};
 export const removeMember = async (req, res) => {};
