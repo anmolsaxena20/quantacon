@@ -42,8 +42,8 @@ export const getUserDetails = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
     await user.populate([
-      { path: "followers", select: "name profilePic" },
-      { path: "following", select: "name profilePic" },
+      { path: "followers", select: "name picture" },
+      { path: "following", select: "name picture" },
     ]);
     res.status(200).json({ user });
   } catch (err) {
