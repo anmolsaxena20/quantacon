@@ -70,8 +70,12 @@ export const followUser = async (req, res) => {
     await User.findByIdAndUpdate(targetId, {
       $addToSet: { followers: userId },
     });
-
-    res.json({ message: "Followed successfully" });
+    const updates = {};
+    if (targetUser.followers.length >= 500 && !targetUser.isVerifiedUser) {
+      await User.findByIdAndUpdate(targetId, { isVerifiedUser: true });
+      updates.isVerifiedUser = true;
+    }
+    res.json({ message: "Followed successfully", ...updates });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
