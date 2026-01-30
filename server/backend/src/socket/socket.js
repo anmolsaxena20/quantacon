@@ -24,7 +24,6 @@ export const initSocket = (server) => {
     socket.on("join_chat", async ({ chatId }) => {
       const chat = await Chat.findById(chatId).select("members");
       if (!chat) return;
-
       const isMember = chat.members.some(
         (member) => member.toString() === socket.user.id,
       );
@@ -35,7 +34,7 @@ export const initSocket = (server) => {
       }
       socket.join(chatId);
     });
-    socket.on("send_message", async ({ chatId, text }) => {
+    socket.on("send_message", async ({ chatId, content, messageType }) => {
       const chat = await Chat.findById(chatId).select("members");
 
       if (!chat) return;
@@ -49,8 +48,8 @@ export const initSocket = (server) => {
       const message = await Message.create({
         chatId,
         sender: socket.user.id,
-        content: text,
-        messageType: "text",
+        content: content,
+        messageType: messageType,
       });
       io.to(chatId).emit("receiveMessage", message);
     });
