@@ -41,10 +41,10 @@ export const getUserDetails = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    (await user.populate("followers", "name profilePic")).populate(
-      "following",
-      "name profilePic",
-    );
+    await user.populate([
+      { path: "followers", select: "name profilePic" },
+      { path: "following", select: "name profilePic" },
+    ]);
     res.status(200).json({ user });
   } catch (err) {
     console.error("Get user details error:", err.message);
