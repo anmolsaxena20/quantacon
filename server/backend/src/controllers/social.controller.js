@@ -99,15 +99,137 @@ export const toggleLikePost = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-export const addComment = async (req, res) => {
+export const toggleLikeReel = async (req, res) => {
   try {
+    const userId = req.user.id;
+    const reel = await Reel.findById(req.params.reelId);
+    if (!reel) return res.status(404).json({ message: "Post not found" });
+
+    const liked = reel.likes.includes(userId);
+
+    if (liked) reel.likes.pull(userId);
+    else reel.likes.push(userId);
+    await reel.save();
+    res.json({ likes: reel.likes.length });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+export const addCommentPost = async (req, res) => {
+  try {
+    const { text, parentComment } = req.body;
+
     const comment = await Comment.create({
-      postId: req.params.postId,
+      targetId: req.params.postId,
+      targetModel: "Post",
       author: req.user.id,
-      text: req.body.text,
+      text,
+      parentComment: parentComment || null,
     });
 
-    res.json(comment);
+    await comment.populate("author", "name picture");
+    if (!parentComment) {
+      await Post.findByIdAndUpdate(req.params.postId, {
+        $inc: { commentCount: 1 },
+      });
+    }
+    res.status(201).json(comment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+export const addCommentReel = async (req, res) => {
+  try {
+    const { text, parentComment } = req.body;
+    const comment = await Comment.create({
+      targetId: req.params.reelId,
+      targetModel: "Reel",
+      author: req.user.id,
+      text,
+      parentComment: parentComment || null,
+    });
+    await comment.populate("author", "name picture");
+    if (!parentComment) {
+      await Reel.findByIdAndUpdate(req.params.reelId, {
+        $inc: { commentCount: 1 },
+      });
+    }
+
+    res.status(201).json(comment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+export const getPostLikes = async (req, res) => {
+  try {
+    const { limit = 20 } = req.query;
+
+    const post = await Post.findById(req.params.postId).populate({
+      path: "likes",
+      select: "name picture",
+      options: { limit: Number(limit) },
+    });
+
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    res.status(200).json(post.likes);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+export const getReelLikes = async (req, res) => {
+  try {
+    const { limit = 20 } = req.query;
+
+    const reel = await Reel.findById(req.params.reelId).populate({
+      path: "likes",
+      select: "name picture",
+      options: { limit: Number(limit) },
+    });
+
+    if (!reel) return res.status(404).json({ message: "Reel not found" });
+
+    res.status(200).json(reel.likes);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+export const getPostComments = async (req, res) => {
+  try {
+    const { limit = 20, parentComment } = req.query;
+
+    const filter = {
+      targetId: req.params.postId,
+      targetModel: "Post",
+      parentComment: parentComment || null,
+    };
+
+    const comments = await Comment.find(filter)
+      .populate("author", "name picture")
+      .sort({ createdAt: -1 })
+      .limit(Number(limit));
+
+    res.status(200).json(comments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+export const getReelComments = async (req, res) => {
+  try {
+    const { limit = 20, parentComment } = req.query;
+
+    const filter = {
+      targetId: req.params.reelId,
+      targetModel: "Reel",
+      parentComment: parentComment || null,
+    };
+
+    const comments = await Comment.find(filter)
+      .populate("author", "name picture")
+      .sort({ createdAt: -1 })
+      .limit(Number(limit));
+
+    res.status(200).json(comments);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
