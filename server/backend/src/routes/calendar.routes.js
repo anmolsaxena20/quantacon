@@ -18,7 +18,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google-calendar", {
     session: false,
-    failureRedirect: "/calendar/google/failure",
+    failureRedirect: "/api/calendar/google/failure",
   }),
   oauthCalendarSuccess,
 );

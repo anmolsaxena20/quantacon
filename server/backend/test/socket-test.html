@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket Test</title>
+  </head>
+  <body>
+    <h2>Socket Chat Test</h2>
+
+    <input id="token" placeholder="JWT Token" size="60" />
+    <br /><br />
+
+    <input id="chatId" placeholder="Chat ID" size="40" />
+    <button onclick="joinChat()">Join Chat</button>
+
+    <br /><br />
+
+    <input id="messageInput" placeholder="Type message..." size="40" />
+    <button onclick="sendMessage()">Send</button>
+
+    <h3>Messages:</h3>
+    <ul id="messages"></ul>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+      let socket;
+
+      function connectSocket() {
+        const token = document.getElementById("token").value;
+
+        socket = io("http://localhost:5000", {
+          auth: { token },
+        });
+
+        socket.on("connect", () => {
+          addMessage("✅ Connected to server");
+        });
+
+        socket.on("connect_error", (err) => {
+          addMessage("❌ Connection error: " + err.message);
+        });
+
+        socket.on("receiveMessage", (msg) => {
+          addMessage("💬 " + msg.content);
+        });
+
+        socket.on("userTyping", (userId) => {
+          addMessage("✍️ User typing: " + userId);
+        });
+      }
+
+      function joinChat() {
+        if (!socket) connectSocket();
+
+        const chatId = document.getElementById("chatId").value;
+        socket.emit("joinChat", chatId);
+        addMessage("📥 Joined chat: " + chatId);
+      }
+
+      function sendMessage() {
+        const chatId = document.getElementById("chatId").value;
+        const text = document.getElementById("messageInput").value;
+
+        socket.emit("sendMessage", { chatId, text });
+        document.getElementById("messageInput").value = "";
+      }
+
+      function addMessage(text) {
+        const li = document.createElement("li");
+        li.textContent = text;
+        document.getElementById("messages").appendChild(li);
+      }
+    </script>
+  </body>
+</html>
