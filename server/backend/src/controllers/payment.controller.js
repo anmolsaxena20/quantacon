@@ -52,7 +52,7 @@ export const verifyPayment = async (req, res) => {
     }
     const user = await User.findByIdAndUpdate(
       userId,
-      { tier: "pro", isVerifiedUser: true },
+      { tier: plan, isVerifiedUser: true },
       { new: true },
     );
     console.log("payment verified");

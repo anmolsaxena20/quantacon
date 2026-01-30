@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema(
     tier: {
       type: String,
       default: "free",
-      enum: ["free", "gold", "pro"],
+      enum: ["free", "gold", "silver"],
     },
     authProvider: {
       type: String,
