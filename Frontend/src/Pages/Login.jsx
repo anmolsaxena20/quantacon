@@ -35,7 +35,11 @@ export default function Login() {
             )
             if (!res.ok) {
                 toast.error("login failed");
-                throw new Error("Error in login");
+                
+                setEmail("");
+                setPassword("");
+                 setIsLoading(false);
+                return;
             }
             const loginUser = await res.json();
             toast.success("login successful")
@@ -48,7 +52,10 @@ export default function Login() {
 
         } catch (error) {
             console.log("Error in login", error)
-            navigate("/login");
+             setEmail("");
+            setPassword("");
+            setIsLoading(false);
+            return;
         }
     };
 

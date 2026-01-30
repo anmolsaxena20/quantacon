@@ -1,42 +1,48 @@
-import React, { createContext, useState, useContext, useEffect } from 'react'
-import toast from 'react-hot-toast';
+import { createContext, useContext, useEffect, useState } from "react";
+
 const AuthContext = createContext();
 
-export const AuthContextProvider = ({ children }) => {
-  const [isLogin, setIsLogin] = useState(false);
-  const [user, setUser] = useState();
-  useEffect(() => {
-    const fetchUserDetail = async () => {
+export function AuthContextProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const[isLogin,setIsLogin] = useState(false);
 
+  useEffect(() => {
+    const fetchMe = async () => {
       try {
         const token = localStorage.getItem("token");
+
         if (!token) {
-          toast.error("invalid user");
+          setUser(null);
           return;
         }
-        const res = await fetch("http://localhost:5000/api/users/me",
-          {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${token}`
-            }
-          }
-        )
-        if (!res.ok) throw new Error("error in fetching detail")
-        const detail = await res.json();
-        setUser(detail.user)
-        setIsLogin(true);
-      } catch (error) {
-        console.log("error", error)
+
+        const res = await fetch("http://localhost:5000/api/users/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) throw new Error("Unauthorized");
+
+        const data = await res.json();
+        setUser(data.user);
+      } catch (err) {
+        setUser(null);
+        localStorage.removeItem("token");
+      } finally {
+        setAuthLoading(false);
       }
-    }
-    fetchUserDetail();
-  }, [])
+    };
+
+    fetchMe();
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ isLogin, setIsLogin, user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, authLoading ,setIsLogin}}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 export default function useAuth() {

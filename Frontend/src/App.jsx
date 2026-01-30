@@ -20,12 +20,15 @@ import CreatePostReel from "./Components/reels/UploadReelAndFeed";
 import UserSearch from "./Components/search/UserSearch";
 import CreateWorkoutAlarm from "@/Pages/WorkoutAlarm"
 import NotFound from "./Pages/NotFoundPage";
+import ProtectedRoute from "./Components/layout/ProtectedLayout";
 function App() {
     return (
         <BrowserRouter>
+        <AuthContextProvider>
             <Routes>
                 <Route path="/" element={<AppLayout />}>
                     <Route index element={<Navigate to="/login" replace />} />
+                    <Route element={<ProtectedRoute/>}>
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="workout" element={<Workout />} />
                     <Route path="create-workout" element={<WorkoutCreator />} />
@@ -35,14 +38,17 @@ function App() {
                     <Route path="pricing" element={<PricingSync />} />
                     <Route path="logout" element={<Logout />} />
                     <Route path="workout-alarm" element={<CreateWorkoutAlarm/>}/>
+                    </Route>
                 </Route>
                 <Route path='/community' element={<ChatStoreProvider><CommunityLayout /></ChatStoreProvider>}>
+                <Route element={<ProtectedRoute/>}>
                     <Route path="social" element={<Community />} />
                     <Route path="chats" element={<Chats />} />
                     <Route path="chat/:id" element={<Chat />} />
                     <Route path="/community/profile-setup" element={<ProfileSetup />} />
                     <Route path="reel" element={<CreatePostReel />} />
                     <Route path="search" element={<UserSearch />} />
+                    </Route>
                 </Route>
 
                 <Route path="/login" element={<AuthContextProvider><Login /></AuthContextProvider>} />
@@ -50,6 +56,7 @@ function App() {
                 <Route path="/oauth-success" element={<OAuthSuccessPage />} />
                 <Route path ="*" element={<NotFound/>}/>
             </Routes>
+            </AuthContextProvider>
         </BrowserRouter>
     );
 }
