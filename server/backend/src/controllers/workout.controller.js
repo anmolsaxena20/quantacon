@@ -165,3 +165,30 @@ export const createWorkoutAlarm = async (req, res) => {
     res.status(500).json({ error: "Failed to create alarm" });
   }
 };
+export const getWorkoutDaysOfMonth = async (req, res) => {
+  const { year, month } = req.query;
+  const start = new Date(year, month - 1, 1);
+  const end = new Date(year, month, 1);
+
+  const sessions = await WorkoutSession.find({
+    userId: req.user.id,
+    date: { $gte: start, $lt: end },
+  }).select("date");
+
+  const days = sessions.map((s) => new Date(s.date).getDate());
+
+  res.json({ days });
+};
+export const getWorkoutsOfDay = async (req, res) => {
+  const date = new Date(req.query.date);
+
+  const start = new Date(date.setHours(0, 0, 0, 0));
+  const end = new Date(date.setHours(23, 59, 59, 999));
+
+  const sessions = await WorkoutSession.find({
+    userId: req.user.id,
+    date: { $gte: start, $lte: end },
+  }).populate("exercises.exerciseId", "name muscleGroups type");
+
+  res.json({ sessions });
+};

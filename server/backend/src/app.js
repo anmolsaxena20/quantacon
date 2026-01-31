@@ -8,6 +8,7 @@ import userRoutes from "./routes/user.routes.js";
 import workoutRoutes from "./routes/workout.routes.js";
 import calendarRoutes from "./routes/calendar.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
+import aiChatBotRoutes from "./routes/aiChatBot.routes.js";
 import { requireAuth } from "./middlewares/auth.middleware.js";
 import { allowTiers } from "./middlewares/tier.middleware.js";
 import passport from "./config/passport.config.js";
@@ -26,4 +27,8 @@ app.use("/api/social", requireAuth, socialRoutes);
 app.use("/api/social/chat", requireAuth, chatRoutes);
 app.use("/api/users", requireAuth, userRoutes);
 app.use("/api/workout", requireAuth, workoutRoutes);
+app.use(
+  "/api/ai/chat",
+  /*requireAuth, allowTiers(["silver", "gold"]),*/ aiChatBotRoutes,
+);
 export default app;
