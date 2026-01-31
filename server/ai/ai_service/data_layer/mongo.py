@@ -7,7 +7,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from typing import Optional
 
 # Get MongoDB URL from environment or use default
-MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017/quantacon")
 
 # Initialize client
 client: Optional[AsyncIOMotorClient] = None

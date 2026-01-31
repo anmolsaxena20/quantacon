@@ -1,4 +1,5 @@
 import express from "express";
-import {} from "../controllers/progress.controller.js"
+import { getProgressStats } from "../controllers/progress.controller.js";
 const router = express.Router();
+router.get("/stats", getProgressStats); 
 export default router;

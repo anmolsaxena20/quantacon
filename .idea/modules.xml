@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ai_service.iml" filepath="$PROJECT_DIR$/.idea/ai_service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/quantacon.iml" filepath="$PROJECT_DIR$/.idea/quantacon.iml" />
     </modules>
   </component>
 </project>
