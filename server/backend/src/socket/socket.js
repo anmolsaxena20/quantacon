@@ -51,6 +51,8 @@ export const initSocket = (server) => {
         content: content,
         messageType: messageType,
       });
+      chat.lastMessage = message;
+      await chat.save();
       io.to(chatId).emit("receiveMessage", message);
     });
 
