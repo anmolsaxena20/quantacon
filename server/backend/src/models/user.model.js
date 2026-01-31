@@ -20,7 +20,11 @@ const userSchema = new mongoose.Schema(
     picture: {
       type: String,
       default:
-        "https://res.cloudinary.com/djd94qxqr/image/upload/v1769709881/profile/rihfscbyhrjjgzyusjpk.png",
+        "https://res.cloudinary.com/djd94qxqr/image/upload/v1769866682/default_fh4qqp.jpg",
+    },
+    picturePublicId: {
+      type: String,
+      default: "default_fh4qqp",
     },
     gender: {
       type: String,
@@ -28,10 +32,6 @@ const userSchema = new mongoose.Schema(
       enum: ["male", "female", "Prefer not to say"],
     },
 
-    picturePublicId: {
-      type: String,
-      default: "default_yzzskf",
-    },
     refreshToken: {
       type: String,
     },
