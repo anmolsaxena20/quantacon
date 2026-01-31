@@ -80,7 +80,7 @@ export default function Dashboard() {
                     <motion.div variants={item}>
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg">Weekly Progress</CardTitle>
+                                <CardTitle className="text-lg">Monthly Progress</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <div className="flex justify-between items-end h-[100px] mb-2">

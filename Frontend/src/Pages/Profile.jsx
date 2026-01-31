@@ -14,7 +14,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Camera } from "lucide-react";
+import { Camera ,Check} from "lucide-react";
 import { Toaster, toast } from "sonner";
 import useAuth from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +34,7 @@ export default function Profile() {
     weight: "",
     image: "",
     gender: "",
+    tier:""
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -52,6 +53,7 @@ export default function Profile() {
       weight: user.weight || "75",
       image: user.picture || "",
       gender: user.gender || "",
+      tier:user.tier ||"free"
     });
   }, [user]);
 
@@ -202,11 +204,13 @@ export default function Profile() {
                   alt="profile"
                   className="w-full h-full object-cover"
                 />
+                
               ) : (
-                <span className="text-3xl font-bold">
-                  {profile.name?.[0]}
+                  <span className="text-3xl font-bold">
+                    {profile.name?.[0]}<span><Check color="#2321c0"/></span>
                 </span>
               )}
+              
               <button
                 onClick={() => fileInputRef.current.click()}
                 className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center"
@@ -224,7 +228,8 @@ export default function Profile() {
           </div>
 
           <div>
-            <CardTitle className="text-xl">{profile.name}</CardTitle>
+            <CardTitle className="text-xl flex">{profile.name}{profile.tier!="free" &&<Check color="#2321c0"/>}</CardTitle>
+           
             <CardDescription>{profile.email}</CardDescription>
           </div>
         </CardHeader>
@@ -238,6 +243,7 @@ export default function Profile() {
           <div className="grid md:grid-cols-2 gap-4">
             <Input name="height" value={profile.height} onChange={handleChange} disabled={!editing} />
             <Input name="weight" value={profile.weight} onChange={handleChange} disabled={!editing} />
+            <Input name="weight" value={profile.gender} onChange={handleChange} disabled={!editing} />
           </div>
           <div className="flex gap-6 justify-start text-sm">
             <button

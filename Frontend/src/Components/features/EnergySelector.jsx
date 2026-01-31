@@ -5,9 +5,12 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Toaster } from "react-hot-toast";
+import { toast } from "sonner";
 export default function EnergySelector() {
     const [level, setLevel] = useState(null);
     const [hidden, setHidden] = useState(false);
+    const[workout,setWorkout] = useState([]);
 
     const options = [
         { value: "low", label: "Low", icon: Moon, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400" },
@@ -35,8 +38,36 @@ export default function EnergySelector() {
         { name: "Lateral Raises", sets: "9 sets x 15 reps" }
     ]
 
+    const fetchWorkout = async(e)=>{
+        setLevel(e.target.value);
+        console.log("",e.target.value)
+        try {
+            const token = localStorage.getItem("token");
+            if(!token) return;
+            const res = fetch("http://localhost:5000/api/workout/generate",{
+                method:"POST",
+                headers:{
+                    "Authorization":`Bearer ${token}`,
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({energyLevel:e.target.value})
+            })
+            if(!res.ok){
+                toast.error("Error in fetching workout based on energy level");
+                console.log(res)
+                return;
+            }
+            const data = await res.json();
+            console.log("wokout received",data);
+            setWorkout(data);
+        } catch (error) {
+            console.log("Erro in fetching workout");
+        }
+    }
+
     return (
         <Card className="border-border/50">
+            <Toaster/>
             <CardHeader>
                 <CardTitle className="text-lg">How is your energy today?</CardTitle>
             </CardHeader>
@@ -44,7 +75,8 @@ export default function EnergySelector() {
                 {options.map((opt) => (
                     <button
                         key={opt.value}
-                        onClick={() => setLevel(opt.value)}
+                        value={opt.value}
+                        onClick={fetchWorkout}
                         className={cn(
                             "flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all hover:scale-105",
                             level === opt.value
@@ -64,8 +96,8 @@ export default function EnergySelector() {
                             <div className="flex justify-between items-start">
                                 <div>
                                     <Badge className="mb-2 bg-primary/20 text-primary hover:bg-primary/30">Strength Focus</Badge>
-                                    <CardTitle className="text-2xl">Upper Body Power</CardTitle>
-                                    <CardDescription>Estimated time: {level == 'low' ? 30 : level == 'medium' ? 40 : 50} mins <span className="text-red-400">Difficulty:</span><span className="text-pink-400"> {level}</span></CardDescription>
+                                    <CardTitle className="text-2xl">{workout?.title}</CardTitle>
+                                    <CardDescription>Estimated time: {workout?.estimatedTime} mins <span className="text-red-400">Difficulty:</span><span className="text-pink-400"> {workout?.difficulty}</span></CardDescription>
                                 </div>
                                 <div className="h-12 w-12 bg-primary rounded-full flex items-center justify-center text-primary-foreground shadow-glow animate-pulse">
                                     <Clock className="h-6 w-6" />
@@ -74,32 +106,16 @@ export default function EnergySelector() {
 
                         </CardHeader>
                         <CardContent>
-                            {level == 'low' &&
+
+                            {level  &&
                                 <div className="space-y-2">
-                                    {Easyworkout.map((ex, i) => (
+                                    {workout?.exercises?.map((ex, i) => (
                                         <div key={i} className="flex justify-between items-center p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
-                                            <span className="font-medium">{i + 1}. {ex.name}</span>
-                                            <span className="text-muted-foreground">{ex.sets}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            }
-                            {level == 'medium' &&
-                                <div className="space-y-2">
-                                    {Mediumworkout.map((ex, i) => (
-                                        <div key={i} className="flex justify-between items-center p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
-                                            <span className="font-medium">{i + 1}. {ex.name}</span>
-                                            <span className="text-muted-foreground">{ex.sets}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            }
-                            {level == 'high' &&
-                                <div className="space-y-2">
-                                    {Hardworkout.map((ex, i) => (
-                                        <div key={i} className="flex justify-between items-center p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
-                                            <span className="font-medium">{i + 1}. {ex.name}</span>
-                                            <span className="text-muted-foreground">{ex.sets}</span>
+                                            <span className="font-medium">{i + 1}. {ex?.name}</span>
+                                            <span className="text-muted-foreground">{ex?.sets}</span>
+                                            <span className="text-muted-foreground">{ex?.reps}</span>
+                                            <span className="text-muted-foreground">{ex?.duration}</span>
+                                            <span className="text-muted-foreground">{ex?.xp}</span>
                                         </div>
                                     ))}
                                 </div>
