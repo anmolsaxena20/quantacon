@@ -52,7 +52,7 @@ export const verifyPayment = async (req, res) => {
     }
     const user = await User.findByIdAndUpdate(
       userId,
-      { tier: plan, isVerifiedUser: true },
+      { tier: plan },
       { new: true },
     );
     console.log("payment verified");
@@ -80,7 +80,6 @@ export const verifyPayment = async (req, res) => {
     res.json({
       message: "Payment successful, tier upgraded",
       accessToken,
-      isVerifiedUser: true,
       user: { id: user._id, tier: user.tier },
     });
   } catch (err) {
