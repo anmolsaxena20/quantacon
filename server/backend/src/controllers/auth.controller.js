@@ -141,10 +141,11 @@ export const oauthSuccess = async (req, res) => {
       id: user._id,
       tier: user.tier,
     });
-
+    user.refreshToken = refreshToken;
+    await user.save();
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // true in production
+      secure: false,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
