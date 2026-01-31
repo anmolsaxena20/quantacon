@@ -175,7 +175,7 @@ export const getWorkoutDaysOfMonth = async (req, res) => {
     date: { $gte: start, $lt: end },
   }).select("date");
 
-  const days = sessions.map((s) => new Date(s.date).getDate());
+  const days = sessions.map((s) => new Date(s.date).getUTCDate());
 
   res.json({ days });
 };
