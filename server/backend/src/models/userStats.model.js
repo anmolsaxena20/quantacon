@@ -6,7 +6,6 @@ const userStatsSchema = new mongoose.Schema({
   level: { type: Number, default: 1 },
   currentXp: { type: Number, default: 0 },
   totalXp: { type: Number, default: 0 },
-  level: { type: Number, default: 1 },
   streak: {
     current: { type: Number, default: 0 },
     longest: { type: Number, default: 0 },

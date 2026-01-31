@@ -192,3 +192,53 @@ export const getWorkoutsOfDay = async (req, res) => {
 
   res.json({ sessions });
 };
+
+export const getDashboardStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    let { year, month } = req.query;
+
+    year = Number(year);
+    month = Number(month);
+
+    if (!year || !month || month < 1 || month > 12) {
+      return res.status(400).json({ message: "Invalid year or month" });
+    }
+
+    const stats = await UserStats.findOne({ user: userId });
+    if (!stats) return res.status(404).json({ message: "Stats not found" });
+
+    const xpRequiredForNextLevel = stats.level * 500;
+    const xpToNextLevel = Math.max(xpRequiredForNextLevel - stats.currentXp, 0);
+
+    const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
+    const endOfMonth = new Date(Date.UTC(year, month, 1));
+
+    const monthlySessions = await WorkoutSessions.find({
+      user: userId,
+      completed: true,
+      date: { $gte: startOfMonth, $lt: endOfMonth },
+    }).select("date");
+
+    const workoutDays = monthlySessions.map((s) =>
+      new Date(s.date).getUTCDate(),
+    );
+
+    res.json({
+      level: stats.level,
+      currentXp: stats.currentXp,
+      totalXp: stats.totalXp,
+      xpToNextLevel,
+
+      streak: stats.streak.current,
+      longestStreak: stats.streak.longest,
+
+      workoutsCompleted: stats.workoutsCompleted,
+      minutesTrained: stats.minutesTrained,
+
+      workoutDays,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
