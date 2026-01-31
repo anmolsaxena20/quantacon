@@ -24,12 +24,12 @@ export default function Chats() {
         const formattedChats = data.map(chat => {
           const otherUser = chat.members.find(m => m._id !== user._id);
           console.log("other user",otherUser)
-          console.log("chat",chat)
+         
           return {
             chatId: chat._id,
             name: otherUser.name,
             picture: otherUser.picture || "",
-            lastMessage: chat.lastMessage?.text || "",
+            lastMessage: chat?.lastMessage || null,
           };
         });
 
@@ -40,7 +40,7 @@ export default function Chats() {
     };
 
      fetchChats();
-     console.log("chats ",chats);
+  
     
     
     
@@ -84,7 +84,15 @@ export default function Chats() {
                 {chat?.name}
               </p>
               <p className="text-sm text-muted-foreground truncate">
-                {chat?chat.messageType=="text"?chat.lastMessage:"Media sent" : "No messages yet"}
+             {
+                  chat?.lastMessage
+                    ? ((chat.lastMessage.messageType === "text")
+                      ? chat.lastMessage.content
+                      : "Media ")
+                    : "No messages yet"
+                }
+
+
               </p>
             </div>
           </div>

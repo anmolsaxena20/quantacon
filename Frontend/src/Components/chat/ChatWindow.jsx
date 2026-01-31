@@ -1,496 +1,3 @@
-// import { useEffect, useRef, useState } from "react";
-// import { useParams } from "react-router-dom";
-// import { Input } from "@/components/ui/input";
-// import { Button } from "@/components/ui/button";
-// import useAuth from "@/Context/AuthContext";
-// import { socket } from "@/socket/socket";
-
-// export default function ChatWindow() {
-//   const { chatId } = useParams();
-//   const { user } = useAuth();
-//   const token = localStorage.getItem("token");
-
-//   const [messages, setMessages] = useState([]);
-//   const [text, setText] = useState("");
-//   const [file, setFile] = useState(null);
-//   const [page, setPage] = useState(1);
-//   const [hasMore, setHasMore] = useState(true);
-//   const [loading, setLoading] = useState(false);
-
-//   const containerRef = useRef(null);
-//   const bottomRef = useRef(null);
-
-//   /* -------------------------------
-//      FETCH PREVIOUS MESSAGES
-//   --------------------------------*/
-//   const fetchMessages = async (pageNo = 1) => {
-//     if (!chatId || loading || !hasMore) return;
-
-//     try {
-//       setLoading(true);
-
-//       const res = await fetch(
-//         `http://localhost:5000/api/social/chat/${chatId}?limit=20&page=${pageNo}`,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       const data = await res.json();
-
-//       if (data.length < 20) setHasMore(false);
-
-//       setMessages((prev) => [...data, ...prev]);
-//     } catch (err) {
-//       console.error("Failed to fetch messages", err);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   /* -------------------------------
-//      INITIAL LOAD + SOCKET
-//   --------------------------------*/
-//   useEffect(() => {
-//     if (!chatId) return;
-
-//     setMessages([]);
-//     setPage(1);
-//     setHasMore(true);
-
-//     fetchMessages(1);
-//     socket.emit("join_chat", { chatId });
-
-//     const handleReceive = (msg) => {
-//       setMessages((prev) => {
-//         if (prev.some((m) => m._id === msg._id)) return prev;
-//         return [...prev, msg];
-//       });
-//     };
-
-//     socket.on("receiveMessage", handleReceive);
-
-//     return () => {
-//       socket.off("receiveMessage", handleReceive);
-//     };
-//   }, [chatId]);
-
-//   /* -------------------------------
-//      AUTO SCROLL ON NEW MESSAGE
-//   --------------------------------*/
-//   useEffect(() => {
-//     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-//   }, [messages.length]);
-
-//   /* -------------------------------
-//      LOAD MORE ON SCROLL TOP
-//   --------------------------------*/
-//   const handleScroll = () => {
-//     if (
-//       containerRef.current.scrollTop === 0 &&
-//       hasMore &&
-//       !loading
-//     ) {
-//       const nextPage = page + 1;
-//       setPage(nextPage);
-//       fetchMessages(nextPage);
-//     }
-//   };
-//   const uploadMedia = async () => {
-//     const formData = new FormData();
-//     formData.append("media", file);
-
-//     const res = await fetch(
-//       "http://localhost:5000/api/social/chat/media",
-//       {
-//         method: "POST",
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: formData,
-//       }
-//     );
-
-//     const data = await res.json();
-//     return data.url;
-//   };
-//   const sendMessage = async() => {
-   
-//     if (!text.trim() && !file) return;
-
-//     let messageType = "text";
-//     let content = text;
-
-//     if (file) {
-//       const mediaUrl = await uploadMedia();
-//       messageType = file.type.startsWith("video") ? "video" : "image";
-//       content = mediaUrl;
-//     }
-
-//     socket.emit("send_message", {
-//       chatId,
-//       content,
-//       messageType,
-//     });
-
-//     setText("");
-//     setFile(null);
-//   };
-
-//   /* -------------------------------
-//      RENDER MESSAGE
-//   --------------------------------*/
-//   const renderMessage = (msg, isMe) => {
-//     switch (msg.messageType) {
-//       case "image":
-//         return (
-//           <img
-//             src={msg.content}
-//             className="max-w-[240px] rounded-lg"
-//             alt="img"
-//           />
-//         );
-//       case "video":
-//         return (
-//           <video
-//             src={msg.content}
-//             controls
-//             className="max-w-[260px] rounded-lg"
-//           />
-//         );
-//       default:
-//         return <p>{msg.content}</p>;
-//     }
-//   };
-
-//   return (
-//     <div className="flex flex-col h-full bg-background">
-//       {/* CHAT BODY */}
-//       <div
-//         ref={containerRef}
-//         onScroll={handleScroll}
-//         className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
-//       >
-//         {loading && (
-//           <p className="text-center text-xs text-muted-foreground">
-//             Loading...
-//           </p>
-//         )}
-
-//         {messages.map((msg) => {
-//           const isMe =
-//             msg.sender === user._id ||
-//             msg.sender?._id === user._id;
-
-//           return (
-//             <div
-//               key={msg._id}
-//               className={`flex ${
-//                 isMe ? "justify-end" : "justify-start"
-//               }`}
-//             >
-//               <div
-//                 className={`rounded-2xl px-3 py-2 text-sm max-w-[70%] ${
-//                   isMe
-//                     ? "bg-purple-600 text-white rounded-br-none"
-//                     : "bg-muted rounded-bl-none"
-//                 }`}
-//               >
-//                 {renderMessage(msg, isMe)}
-//               </div>
-//             </div>
-//           );
-//         })}
-
-//         <div ref={bottomRef} />
-//       </div>
-
-//       {/* INPUT BAR */}
-//       <div className="border-t p-3 flex items-center gap-2">
-//         <input
-//           type="file"
-//           accept="image/*,video/*"
-//           onChange={(e) => setFile(e.target.files[0])}
-//           className="hidden"
-//           id="media"
-//         />
-
-//         <label
-//           htmlFor="media"
-//           className="cursor-pointer text-xl"
-//         >
-//           📎
-//         </label>
-
-//         <Input
-//           value={text}
-//           placeholder="Type a message"
-//           onChange={(e) => setText(e.target.value)}
-//           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-//         />
-
-//         <Button onClick={sendMessage}>Send</Button>
-//       </div>
-//     </div>
-//   );
-// }
-
-// import { useEffect, useRef, useState } from "react";
-// import { useParams } from "react-router-dom";
-// import { Input } from "@/components/ui/input";
-// import { Button } from "@/components/ui/button";
-// import useAuth from "@/Context/AuthContext";
-// import { socket } from "@/socket/socket";
-// import { Plus } from "lucide-react";
-
-
-// export default function ChatWindow() {
-//   const { chatId } = useParams();
-//   const { user } = useAuth();
-//   const token = localStorage.getItem("token");
-
-//   const [messages, setMessages] = useState([]);
-//   const [text, setText] = useState("");
-//   const [file, setFile] = useState(null);
-
-//   const [page, setPage] = useState(1);
-//   const [hasMore, setHasMore] = useState(true);
-//   const [loading, setLoading] = useState(false);
-
-//   const containerRef = useRef(null);
-//   const bottomRef = useRef(null);
-
-//   /* ----------------------------------
-//      FETCH PREVIOUS MESSAGES (PAGINATION)
-//   -----------------------------------*/
-//   const fetchMessages = async (pageNo = 1) => {
-//     if (!chatId || loading || !hasMore) return;
-
-//     try {
-//       setLoading(true);
-//       const res = await fetch(
-//         `http://localhost:5000/api/social/chat/${chatId}?limit=20&page=${pageNo}`,
-//         {
-//           headers: { Authorization: `Bearer ${token}` },
-//         }
-//       );
-
-//       const data = await res.json();
-
-//       if (data.length < 20) setHasMore(false);
-
-//       setMessages((prev) => [...data, ...prev]);
-//     } catch (err) {
-//       console.error("Fetch messages failed", err);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   /* ----------------------------------
-//      SOCKET JOIN + RECEIVE MESSAGE
-//   -----------------------------------*/
-//   useEffect(() => {
-//     if (!chatId) return;
-
-//     setMessages([]);
-//     setPage(1);
-//     setHasMore(true);
-
-//     fetchMessages(1);
-//     socket.emit("join_chat", { chatId });
-
-//     const handleReceive = (msg) => {
-//       setMessages((prev) => {
-//     if (prev.some((m) => m._id === msg._id)) return prev;
-//     return [...prev, msg];
-//   });
-  
-//     };
-
-//     socket.on("receiveMessage", handleReceive);
-
-//     return () => {
-//       socket.off("receiveMessage", handleReceive);
-//     };
-//   }, [chatId]);
-
-//   /* ----------------------------------
-//      AUTO SCROLL
-//   -----------------------------------*/
-//   useEffect(() => {
-//     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-//   }, [messages.length]);
-
-//   /* ----------------------------------
-//      LOAD MORE ON SCROLL TOP
-//   -----------------------------------*/
-//   const handleScroll = () => {
-//     if (containerRef.current.scrollTop === 0 && hasMore && !loading) {
-//       const nextPage = page + 1;
-//       setPage(nextPage);
-//       fetchMessages(nextPage);
-//     }
-//   };
-
-//   /* ----------------------------------
-//      MEDIA UPLOAD
-//   -----------------------------------*/
-//   const uploadMedia = async () => {
-//     const formData = new FormData();
-//     formData.append("media", file);
-
-//     const res = await fetch(
-//       "http://localhost:5000/api/social/chat/media",
-//       {
-//         method: "POST",
-//         headers: { Authorization: `Bearer ${token}` },
-//         body: formData,
-//       }
-//     );
-
-//     const data = await res.json();
-//     return data.url;
-//   };
-
-//   /* ----------------------------------
-//      SEND MESSAGE (FIXED – OPTIMISTIC UI)
-//   -----------------------------------*/
-//   const sendMessage = async () => {
-//     if (!text.trim() && !file) return;
-
-//     let content = text;
-//     let messageType = "text";
-
-//     if (file) {
-//       const mediaUrl = await uploadMedia();
-//       messageType = file.type.startsWith("video") ? "video" : "image";
-//       content = mediaUrl;
-//     }
-
-//     // 🔥 optimistic message
-//     const tempMessage = {
-//       _id: `temp-${Date.now()}`,
-//       sender: user._id,
-//       content,
-//       messageType,
-//       pending: true,
-//     };
-
-//     //setMessages((prev) => [...prev, tempMessage]);
-
-//     socket.emit("send_message", {
-//       chatId,
-//       content,
-//       messageType,
-//     });
-//     tempMessage.pending = false
-//     setText("");
-//     setFile(null);
-//   };
-
-//   /* ----------------------------------
-//      RENDER MESSAGE
-//   -----------------------------------*/
-//   const renderMessage = (msg) => {
-//     if (msg.messageType === "image") {
-//       return (
-//         <img
-//           src={msg.content}
-//           alt="media"
-//           className="max-w-[240px] rounded-lg"
-//         />
-//       );
-//     }
-
-//     if (msg.messageType === "video") {
-//       return (
-//         <video
-//           src={msg.content}
-//           controls
-//           className="max-w-[260px] rounded-lg"
-//         />
-//       );
-//     }
-
-//     return <p>{msg.content}</p>;
-//   };
-
-//   return (
-//     <div className="flex flex-col h-full bg-background">
-      
-//       {/* CHAT BODY */}
-//       <div
-//         ref={containerRef}
-//         onScroll={handleScroll}
-//         className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
-//       >
-//         {loading && (
-//           <p className="text-center text-xs text-muted-foreground">
-//             Loading...
-//           </p>
-//         )}
-
-//         {messages.map((msg) => {
-//           const isMe =
-//             msg.sender === user._id || msg.sender?._id === user._id;
-
-//           return (
-//             <div
-//               key={msg._id}
-//               className={`flex ${
-//                 isMe ? "justify-end" : "justify-start"
-//               }`}
-//             >
-//               <div
-//                 className={`max-w-[70%] px-3 py-2 rounded-2xl text-sm ${
-//                   isMe
-//                     ? "bg-purple-600 text-white rounded-br-none"
-//                     : "bg-muted rounded-bl-none"
-//                 }`}
-//               >
-//                 {renderMessage(msg)}
-//                 {msg.pending && (
-//                   <p className="text-[10px] opacity-60 mt-1">
-//                     Sending...
-//                   </p>
-//                 )}
-//               </div>
-//             </div>
-//           );
-//         })}
-
-//         <div ref={bottomRef} />
-//       </div>
-
-//       {/* INPUT BAR */}
-//       <div className="border-t p-3 flex items-center gap-2">
-//         <input
-//           type="file"
-//           accept="image/*,video/*"
-//           hidden
-//           id="media"
-//           onChange={(e) => setFile(e.target.files[0])}
-//         />
-
-//         <label htmlFor="media" className="cursor-pointer text-xl">
-//           <Plus/>
-//         </label>
-
-//         <Input
-//           value={text}
-//           placeholder="Type a message"
-//           onChange={(e) => setText(e.target.value)}
-//           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-//         />
-
-//         <Button onClick={sendMessage}>Send</Button>
-//       </div>
-//     </div>
-//   );
-// }
 import { useEffect, useRef, useState } from "react";
 import { useParams ,useLocation} from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -509,6 +16,9 @@ export default function ChatWindow() {
   const [chatInfo, setChatInfo] = useState(null);
   const [text, setText] = useState("");
   const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+const fileInputRef = useRef(null);
+
 
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -522,9 +32,7 @@ const { state } = useLocation();
 const userInfo = state?.user;
 console.log("user info",userInfo)
 
-  /* -------------------------------
-     FETCH CHAT INFO (HEADER)
-  --------------------------------*/
+
   const fetchChatInfo = async () => {
     try {
       const res = await fetch(
@@ -540,28 +48,39 @@ console.log("user info",userInfo)
     }
   };
 
-  const fetchMessages = async (pageNo = 1) => {
-    if (!chatId || loading || !hasMore) return;
+ const fetchMessages = async (pageNo = 1) => {
+  if (!chatId || loading || !hasMore) return;
 
-    try {
-      setLoading(true);
-      const res = await fetch(
-        `http://localhost:5000/api/social/chat/${chatId}?limit=20&page=${pageNo}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+  try {
+    setLoading(true);
+
+    const res = await fetch(
+      `http://localhost:5000/api/social/chat/${chatId}?limit=20&page=${pageNo}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    const data = await res.json();
+
+    if (data.length < 20) setHasMore(false);
+
+    setMessages((prev) => {
+      const existingIds = new Set(prev.map((m) => m._id));
+
+      const uniqueNew = data.filter(
+        (m) => !existingIds.has(m._id)
       );
 
-      const data = await res.json();
-      if (data.length < 20) setHasMore(false);
+      return [...uniqueNew, ...prev];
+    });
+  } catch (err) {
+    console.error("Failed to fetch messages", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      setMessages((prev) => [...data, ...prev]);
-    } catch {
-      console.error("Failed to fetch messages");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (!chatId) return;
@@ -612,27 +131,46 @@ console.log("user info",userInfo)
     return data.url;
   };
 
+  const handleFileSelect = (e) => {
+  const selected = e.target.files[0];
+  if (!selected) return;
 
-  const sendMessage = async () => {
-    if (!text.trim() && !file) return;
+  setFile(selected);
 
-    let content = text;
-    let messageType = "text";
-
-    if (file) {
-      content = await uploadMedia();
-      messageType = file.type.startsWith("video") ? "video" : "image";
-    }
-
-    socket.emit("send_message", {
-      chatId,
-      content,
-      messageType,
-    });
-
-    setText("");
-    setFile(null);
+  const previewUrl = URL.createObjectURL(selected);
+  setPreview(previewUrl);
+   fileInputRef.current.value = "";
+};
+useEffect(() => {
+  return () => {
+    if (preview) URL.revokeObjectURL(preview);
   };
+}, [preview]);
+
+
+const sendMessage = async () => {
+  if (!text.trim() && !file) return;
+
+  let content = text;
+  let messageType = "text";
+
+  if (file) {
+    const mediaUrl = await uploadMedia();
+    content = mediaUrl;
+    messageType = file.type.startsWith("video") ? "video" : "image";
+  }
+
+  socket.emit("send_message", {
+    chatId,
+    content,
+    messageType,
+  });
+
+  setText("");
+  setFile(null);
+  setPreview(null);
+};
+
 
 
   const renderMessage = (msg, isMe) => {
@@ -672,7 +210,7 @@ console.log("user info",userInfo)
             fetchMessages(next);
           }
         }}
-        className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
+        className="flex-1 overflow-y-auto px-4 py-3 space-y-3 overscroll-behavior: contain"
       >
         {messages.map((msg) => {
           const isMe =
@@ -700,15 +238,44 @@ console.log("user info",userInfo)
         })}
         <div ref={bottomRef} />
       </div>
+      {preview && (
+  <div className="relative p-2 border-t bg-muted">
+    <button
+      onClick={() => {
+        setFile(null);
+        setPreview(null);
+      }}
+      className="absolute top-1 right-1 bg-black/60 text-white rounded-full px-2"
+    >
+      ✕
+    </button>
+
+    {file.type.startsWith("image") ? (
+      <img
+        src={preview}
+        className="max-h-64 rounded-lg mx-auto"
+        alt="preview"
+      />
+    ) : (
+      <video
+        src={preview}
+        controls
+        className="max-h-64 rounded-lg mx-auto"
+      />
+    )}
+  </div>
+)}
+
 
      
-      <div className="border-t p-3 flex gap-2">
+       <div className="border-t p-3 flex items-center gap-2">
         <input
           type="file"
           accept="image/*,video/*"
+          ref={fileInputRef}
           hidden
           id="media"
-          onChange={(e) => setFile(e.target.files[0])}
+          onChange={ handleFileSelect}
         />
         <label htmlFor="media" className="cursor-pointer text-xl">
           <Plus/>
