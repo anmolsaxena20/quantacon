@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     picture: {
       type: String,
       default:
-        "https://res.cloudinary.com/djd94qxqr/image/upload/v1767083795/default_yzzskf.png",
+        "https://res.cloudinary.com/djd94qxqr/image/upload/v1769709881/profile/rihfscbyhrjjgzyusjpk.png",
     },
     gender: {
       type: String,

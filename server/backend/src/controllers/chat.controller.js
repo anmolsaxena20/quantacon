@@ -12,7 +12,7 @@ export const getAllChatsByUser = async (req, res) => {
         path: "lastMessage",
         populate: {
           path: "sender",
-          select: "name picture",
+          select: "name picture content messageType",
         },
       })
       .sort({ updatedAt: -1 });

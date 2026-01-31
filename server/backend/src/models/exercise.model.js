@@ -7,7 +7,7 @@ const exerciseSchema = new mongoose.Schema({
   type: { type: String, enum: ["strength", "cardio", "mobility"] },
   equipment: { type: String, default: "bodyweight" },
   difficulty: { type: String, enum: ["beginner", "intermediate", "advanced"] },
-
+  calories: { type: Number },
   baseReps: {
     low: Number,
     medium: Number,
