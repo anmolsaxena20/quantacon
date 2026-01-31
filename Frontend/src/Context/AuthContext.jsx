@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-
+import {socket} from "@/socket/socket"
 const AuthContext = createContext();
 
 export function AuthContextProvider({ children }) {
@@ -37,6 +37,18 @@ export function AuthContextProvider({ children }) {
 
     fetchMe();
   }, []);
+  useEffect(() => {
+  if (user) {
+    socket.auth = {
+      token: localStorage.getItem("token"),
+    };
+    socket.connect();
+  }
+
+  return () => {
+    socket.disconnect();
+  };
+}, [user]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, authLoading ,setIsLogin}}>

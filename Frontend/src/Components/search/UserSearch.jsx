@@ -5,12 +5,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 
 export default function UserSearch() {
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
   useEffect(() => {
@@ -80,6 +82,35 @@ export default function UserSearch() {
       setLoading(false);
     }
   };
+  const createChat = async(userId)=>{
+    try {
+      const token  = localStorage.getItem("token");
+      if(!token){
+        toast.error("invalid session");
+        return;
+      }
+      const res = await fetch("http://localhost:5000/api/social/chat/private",
+        {
+          method:"POST",
+          headers:{
+            "Authorization":`Bearer ${token}`,
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({receiverId:userId})
+        }
+      )
+      if(!res.ok){
+        toast.error("Error in creating room");
+        return;
+      }
+      const data = await res.json();
+      console.log("get chat id in userSearch",data);
+      navigate(`/community/chat/${data._id}`);
+    } catch (error) {
+      console.log("Error in connecting chat",error);
+      toast.error("error in chat");
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -139,11 +170,18 @@ export default function UserSearch() {
               </CardHeader>
 
               <CardContent className="pt-0">
+                <div className="flex justify-between">
                 <button 
                 onClick={()=>followUser(user._id)}
                 className="text-sm text-primary hover:underline">
                   follow 
                 </button>
+                 <button 
+                onClick={()=>createChat(user._id)}
+                className="text-sm text-primary hover:underline">
+                  message
+                </button>
+                </div>
               </CardContent>
             </Card>
           ))}

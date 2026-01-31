@@ -21,6 +21,7 @@ import UserSearch from "./Components/search/UserSearch";
 import CreateWorkoutAlarm from "@/Pages/WorkoutAlarm"
 import NotFound from "./Pages/NotFoundPage";
 import ProtectedRoute from "./Components/layout/ProtectedLayout";
+import ChatWindow from "./components/chat/ChatWindow";
 function App() {
     return (
         <BrowserRouter>
@@ -44,7 +45,7 @@ function App() {
                 <Route element={<ProtectedRoute/>}>
                     <Route path="social" element={<Community />} />
                     <Route path="chats" element={<Chats />} />
-                    <Route path="chat/:id" element={<Chat />} />
+                    <Route path="chat/:chatId" element={<ChatWindow />} />
                     <Route path="/community/profile-setup" element={<ProfileSetup />} />
                     <Route path="reel" element={<CreatePostReel />} />
                     <Route path="search" element={<UserSearch />} />
