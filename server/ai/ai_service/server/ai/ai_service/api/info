@@ -1,9 +1,0 @@
-FastAPI routes
-
-1. Fetch ai_state from DB
-2. Fetch workout_history from DB
-3. Decide difficulty
-4. Generate workout
-5. Analyze patterns
-6. Save updated ai_state
-7. Return response

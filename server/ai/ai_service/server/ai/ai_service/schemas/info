@@ -1,4 +1,0 @@
-request/response contracts
-
-“The AI service owns its behavioral memory.
-Frontend sends only today’s constraints, while the AI persists and adapts state using PostgreSQL.”

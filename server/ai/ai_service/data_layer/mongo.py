@@ -37,9 +37,9 @@ def get_database():
 db = get_database()
 
 users_col = db["users"]
-ai_state_col = db["ai_state"]
-workouts_col = db["workout_sessions"]
-reports_col = db["weekly_reports"]
+ai_state_col = db["aiState"]
+workouts_col = db["workoutSessions"]
+reports_col = db["weeklyReports"]
 
 
 async def init_db():
