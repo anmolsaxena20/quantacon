@@ -14,7 +14,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Camera, Check } from "lucide-react";
+import { Camera, Check, BadgeCheck } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import useAuth from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -223,7 +223,7 @@ export default function Profile() {
       <Card className="bg-card/80 backdrop-blur border-border/50">
         <CardHeader className="flex flex-row items-center gap-6">
           <div className="relative">
-            <div className={`w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-violet-500 flex items-center justify-center border-4 ${profile.tier === 'gold' ? 'border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.3)]' : profile.tier === 'silver' ? 'border-slate-300 shadow-[0_0_15px_rgba(203,213,225,0.3)]' : 'border-transparent'}`}>
+            <div className={`w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-violet-500 flex items-center justify-center p-1 ${profile.tier === 'gold' ? 'bg-gradient-to-tr from-yellow-300 via-yellow-500 to-yellow-600 shadow-[0_0_20px_rgba(234,179,8,0.5)]' : profile.tier === 'silver' ? 'bg-gradient-to-tr from-slate-300 via-slate-400 to-slate-500 shadow-[0_0_20px_rgba(148,163,184,0.5)]' : 'border-transparent'}`}>
               {profile.image ? (
                 <img
                   src={profile.image}
@@ -256,8 +256,8 @@ export default function Profile() {
           <div>
             <CardTitle className="text-xl flex items-center gap-2">
               {profile.name}
-              {profile.tier === 'gold' && <Check className="text-yellow-500" />}
-              {profile.tier === 'silver' && <Check className="text-slate-300" />}
+              {profile.tier === 'gold' && <BadgeCheck className="text-yellow-500 fill-yellow-500 text-white w-6 h-6 drop-shadow-md" />}
+              {profile.tier === 'silver' && <BadgeCheck className="text-slate-400 fill-slate-400 text-white w-6 h-6 drop-shadow-md" />}
             </CardTitle>
 
             <CardDescription>{profile.email}</CardDescription>
