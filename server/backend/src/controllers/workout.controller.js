@@ -4,6 +4,7 @@ import User from "../models/user.model.js";
 import Exercise from "../models/exercise.model.js";
 import { getValidAccessToken } from "../utils/googleToken.util.js";
 import axios from "axios";
+import { v5 as uuidv5 } from "uuid";
 export const generateWorkout = async (req, res) => {
   try {
     const { energyLevel } = req.body;
@@ -76,6 +77,18 @@ export const completeWorkout = async (req, res) => {
   try {
     const userId = req.user.id;
     const { exercises, energyLevel, totalDuration } = req.body;
+    const payload = {
+      completed: true,
+      difficulty: energyLevel,
+      duration_minutes: totalDuration,
+      feedback: "Great workout!",
+      user_id: uuidv5(req.user.id.toString(), uuidv5.DNS),
+    };
+    const response = await axios.post(
+      `${process.env.AI_URI}/workout/complete`,
+      payload,
+    );
+    response = response.data;
     if (!exercises || exercises.length === 0) {
       return res.status(400).json({ message: "No exercises data provided" });
     }
@@ -140,9 +153,13 @@ export const completeWorkout = async (req, res) => {
       newLevel: stats.level,
       streak: stats.streak.current,
       totalXp: stats.totalXp,
+      ...response,
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("AI COMPLETE ERROR:", err.response?.data || err);
+    res.status(err.response?.status || 500).json({
+      message: err.response?.data?.detail || "AI server crashed",
+    });
   }
 };
 export const oauthCalendarSuccess = async (req, res) => {

@@ -41,8 +41,7 @@ app.use(
 app.use(
   "/api/ai",
   requireAuth,
-  /*
   allowTiers("silver", "gold"),
-  */ genAiWorkoutRoutes,
+  genAiWorkoutRoutes,
 );
 export default app;
