@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { EXERCISE_LIBRARY } from "@/data/exercises";
-import { Dumbbell, Clock, Flame, ChevronRight, Play, RefreshCw, Layers, X, Plus, Shuffle } from "lucide-react";
+import { Dumbbell, Clock, Flame, ChevronRight, Play, RefreshCw, Layers, X, Plus, Shuffle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -17,6 +17,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export default function WorkoutCreator() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [selectedIntensity, setSelectedIntensity] = useState("medium");
     const [selectedBodyParts, setSelectedBodyParts] = useState(["Full Body"]);
@@ -80,37 +81,45 @@ export default function WorkoutCreator() {
         toast.success("Workout generated! Customize any details below.");
     };
 
-    const fetchGenerateWorkout=async()=>{
+    const fetchGenerateWorkout = async () => {
         const token = localStorage.getItem("token");
-        if(!selectedIntensity && !duration && !selectedBodyParts){
+        if (!selectedIntensity && !duration && !selectedBodyParts) {
             toast.error("please provide all reqired fields");
             return;
         }
-        if(!token){
+        if (!token) {
             toast.error("invalid session");
             return;
         }
-        const res = await fetch("http://localhost:5000/api/ai/generate",
-            {
-                method:"POST",
-                headers:{
-                    "Authorization":`Bearer ${token}`,
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({energyLevel:selectedIntensity,time:duration[0],goal:selectedBodyParts.join(" ")})
-            }
-        )
-        if(!res.ok){
-            toast.error("errror in generating workout");
-            return;
-        }
-        const workout = await res.json();
-        console.log("generated workout",workout);
-        setGeneratedWorkout(workout);
-        navigate("/workout",{
-            state:{aiData:workout}
-        })
 
+        setIsLoading(true);
+        try {
+            const res = await fetch("http://localhost:5000/api/ai/generate",
+                {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ energyLevel: selectedIntensity, time: duration[0], goal: selectedBodyParts.join(" ") })
+                }
+            )
+            if (!res.ok) {
+                toast.error("errror in generating workout");
+                return;
+            }
+            const workout = await res.json();
+            console.log("generated workout", workout);
+            setGeneratedWorkout(workout);
+            navigate("/workout", {
+                state: { aiData: workout }
+            })
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to generate workout");
+        } finally {
+            setIsLoading(false);
+        }
     }
     const updateExercise = (index, field, value) => {
         const updated = [...generatedWorkout];
@@ -138,6 +147,16 @@ export default function WorkoutCreator() {
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 pb-12">
+            {isLoading && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-4">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                        <p className="text-lg font-medium text-foreground animate-pulse">
+                            Crafting your perfect workout...
+                        </p>
+                    </div>
+                </div>
+            )}
             <div className="text-center space-y-4">
                 <motion.h1
                     initial={{ opacity: 0, y: -20 }}
@@ -243,8 +262,13 @@ export default function WorkoutCreator() {
                                     size="lg"
                                     className="w-full text-lg h-14 rounded-xl shadow-xl shadow-primary/25 mt-4 group"
                                     onClick={fetchGenerateWorkout}
+                                    disabled={isLoading}
                                 >
-                                    Generate Workout <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                    {isLoading ? (
+                                        <>Generating...</>
+                                    ) : (
+                                        <>Generate Workout <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" /></>
+                                    )}
                                 </Button>
                             </CardContent>
                         </Card>
@@ -372,7 +396,7 @@ export default function WorkoutCreator() {
                         </Button>
                     </motion.div>
                 )}
-            </ AnimatePresence>
+            </AnimatePresence>
         </div>
     );
 }
