@@ -84,6 +84,25 @@ export const completeWorkout = async (req, res) => {
         .json({ message: "Exercises must be a non-empty array" });
     }
 
+    const payload = {
+      completed: true,
+      difficulty: energyLevel ?? "medium",
+      duration_minutes: Number(totalDuration) || 30,
+      feedback: "Great Workout!",
+      user_id: uuidv5(userId.toString(), uuidv5.DNS),
+    };
+
+    let response = {};
+    try {
+      const aiRes = await axios.post(
+        `${process.env.AI_URI}/workout/complete`,
+        payload,
+      );
+      response = aiRes.data;
+    } catch (e) {
+      console.warn("AI complete route failed:", e.message);
+    }
+
     const formattedExercises = exercises.map((ex) => ({
       exerciseId: ex.exerciseId || null,
       name: ex.name,
@@ -108,7 +127,6 @@ export const completeWorkout = async (req, res) => {
     });
 
     let stats = await UserStats.findOne({ user: userId });
-
     if (!stats) {
       stats = await UserStats.create({
         user: userId,
@@ -116,6 +134,7 @@ export const completeWorkout = async (req, res) => {
         totalXp: 0,
         level: 1,
         workoutsCompleted: 0,
+        minutesTrained: 0,
         streak: { current: 0, longest: 0, lastWorkoutDate: null },
       });
     }
@@ -123,6 +142,7 @@ export const completeWorkout = async (req, res) => {
     stats.currentXp += totalXp;
     stats.totalXp += totalXp;
     stats.workoutsCompleted += 1;
+    stats.minutesTrained += Number(totalDuration || 0);
     stats.level = Math.floor(Math.sqrt(stats.totalXp / 100)) + 1;
 
     const today = new Date();
@@ -149,6 +169,7 @@ export const completeWorkout = async (req, res) => {
       newLevel: stats.level,
       streak: stats.streak.current,
       totalXp: stats.totalXp,
+      ...response,
     });
   } catch (err) {
     console.error("COMPLETE WORKOUT ERROR:", err);
