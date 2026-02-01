@@ -147,7 +147,7 @@ export const completeWorkout = async (req, res) => {
 };
 export const oauthCalendarSuccess = async (req, res) => {
   console.log("calendar access gained");
-  res.status(200).json({ message: "calendar access gained" });
+  res.redirect("http://localhost:5173/");
 };
 export const createWorkoutAlarm = async (req, res) => {
   try {
@@ -181,9 +181,7 @@ export const createWorkoutAlarm = async (req, res) => {
       { headers: { Authorization: `Bearer ${token}` } },
     );
     console.log(result);
-    res.redirect("http://localhost:5173/workout-alarm", {
-      message: "Alarm Set Successfully",
-    });
+    res.status(200).json({ message: "alarm created successfully" });
   } catch (err) {
     if (err.message === "Google reconnect required") {
       return res.status(401).json({
