@@ -122,9 +122,14 @@ export default function Profile() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        toast.error("error in updating profile picture");
+        
+        return;
+      }
+      console.log("data",data);
 
-      setUser(data.user);
+      
       toast.success("Profile picture updated");
     } catch {
       toast.error("Failed to update picture");

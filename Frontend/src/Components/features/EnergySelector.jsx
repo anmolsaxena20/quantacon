@@ -10,7 +10,7 @@ import { toast } from "sonner";
 export default function EnergySelector() {
     const [level, setLevel] = useState(null);
     const [hidden, setHidden] = useState(false);
-    const[workout,setWorkout] = useState([]);
+    const [workout, setWorkout] = useState([]);
 
     const options = [
         { value: "low", label: "Low", icon: Moon, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-400" },
@@ -38,27 +38,27 @@ export default function EnergySelector() {
         { name: "Lateral Raises", sets: "9 sets x 15 reps" }
     ]
 
-    const fetchWorkout = async(e)=>{
+    const fetchWorkout = async (e) => {
         setLevel(e.target.value);
-        console.log("",e.target.value)
+        console.log("", e.target.value)
         try {
             const token = localStorage.getItem("token");
-            if(!token) return;
-            const res = fetch("http://localhost:5000/api/workout/generate",{
-                method:"POST",
-                headers:{
-                    "Authorization":`Bearer ${token}`,
-                    "Content-Type":"application/json"
+            if (!token) return;
+            const res = await fetch("http://localhost:5000/api/workout/generate", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
                 },
-                body:JSON.stringify({energyLevel:e.target.value})
+                body: JSON.stringify({ energyLevel: e.target.value })
             })
-            if(!res.ok){
+            if (!res.ok) {
                 toast.error("Error in fetching workout based on energy level");
                 console.log(res)
                 return;
             }
             const data = await res.json();
-            console.log("wokout received",data);
+            console.log("wokout received", data);
             setWorkout(data);
         } catch (error) {
             console.log("Erro in fetching workout");
@@ -67,7 +67,7 @@ export default function EnergySelector() {
 
     return (
         <Card className="border-border/50">
-            <Toaster/>
+            <Toaster />
             <CardHeader>
                 <CardTitle className="text-lg">How is your energy today?</CardTitle>
             </CardHeader>
@@ -106,21 +106,55 @@ export default function EnergySelector() {
 
                         </CardHeader>
                         <CardContent>
+                            {level && workout?.exercises?.length > 0 && (
+                                <div className="mt-4 rounded-xl overflow-hidden border border-border/50">
 
-                            {level  &&
-                                <div className="space-y-2">
-                                    {workout?.exercises?.map((ex, i) => (
-                                        <div key={i} className="flex justify-between items-center p-3 bg-background/50 rounded-lg hover:bg-background/80 transition-colors">
-                                            <span className="font-medium">{i + 1}. {ex?.name}</span>
-                                            <span className="text-muted-foreground">{ex?.sets}</span>
-                                            <span className="text-muted-foreground">{ex?.reps}</span>
-                                            <span className="text-muted-foreground">{ex?.duration}</span>
-                                            <span className="text-muted-foreground">{ex?.xp}</span>
-                                        </div>
-                                    ))}
+                                   
+                                    <div className="grid grid-cols-4 gap-10 px-4 py-3 text-xs font-semibold uppercase bg-secondary/40 text-muted-foreground">
+                                        <span>Exercise</span>
+                                        <span className="text-center">Reps</span>
+                                        <span className="text-center">Time</span>
+                                        <span className="text-center">XP</span>
+                                    </div>
+
+                                   
+                                    <div className="divide-y divide-border/30">
+                                        {workout.exercises.map((ex, i) => (
+                                            <motion.div
+                                                key={i}
+                                                initial={{ opacity: 0, y: 8 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: i * 0.05 }}
+                                                className="grid grid-cols-4 gap-2 px-4 py-3 items-center bg-background/40 hover:bg-background/70 transition-colors"
+                                            >
+                                              
+                                                <div className="font-medium flex items-center gap-2">
+                                                    <Flame className="h-4 w-4 text-primary" />
+                                                    <span>{ex.name}</span>
+                                                </div>
+
+                                                <div className="text-center text-sm text-muted-foreground">
+                                                    {ex.reps || "-"}
+                                                </div>
+
+                                                
+                                                <div className="text-center text-sm text-muted-foreground">
+                                                    {ex.duration ? `${ex.duration} min` : "-"}
+                                                </div>
+
+                                               
+                                                <div className="text-center">
+                                                    <Badge variant="secondary" className="px-2 py-0.5">
+                                                        {ex.xp || 0} XP
+                                                    </Badge>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
                                 </div>
-                            }
+                            )}
                         </CardContent>
+
                         <CardFooter>
                             <Button size="lg" className="w-full text-lg shadow-lg shadow-primary/20 group" onClick={() => window.location.href = '/workout'}>
                                 <PlayCircle className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" /> Start Workout
