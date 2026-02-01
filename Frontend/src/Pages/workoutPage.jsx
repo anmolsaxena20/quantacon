@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { getExerciseVisuals } from "@/lib/exercise-api";
 
-/* -------------------- helpers -------------------- */
+
 
 const parseDuration = (str) => {
   if (!str) return 60;
@@ -47,7 +47,7 @@ const flattenWorkout = (data) => {
   return list;
 };
 
-
+/* -------------------- confetti -------------------- */
 
 const triggerSmallConfetti = () =>
   confetti({ particleCount: 20, spread: 60, origin: { y: 0.8 } });
@@ -62,7 +62,7 @@ const triggerWinConfetti = () => {
   }, 250);
 };
 
-
+/* -------------------- page -------------------- */
 
 export default function WorkoutPage() {
   const { state } = useLocation();
@@ -85,7 +85,7 @@ export default function WorkoutPage() {
 
   const current = workout[active];
 
-
+  /* ---------------- timer ---------------- */
 
   useEffect(() => {
     if (!running || timer <= 0) return;
@@ -107,49 +107,20 @@ export default function WorkoutPage() {
     return () => clearInterval(id);
   }, [visuals]);
 
-
-  const handleCompleteWorkout = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-      const totalDurationSeconds = workout.reduce((acc, curr) => acc + curr.time, 0);
-      const totalDurationMinutes = Math.ceil(totalDurationSeconds / 60);
-
-      const res = await fetch("http://localhost:5000/api/workout/complete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          exercises: workout,
-          energyLevel: aiData.difficulty,
-          totalDuration: totalDurationMinutes,
-        }),
-      });
-
-      if (!res.ok) throw new Error("Failed to save workout");
-
-      toast.success("Workout saved successfully!");
-    } catch (error) {
-      console.error("Save workout error:", error);
-      toast.error("Cloudn't save workout progress");
-    }
-  };
+  /* ---------------- actions ---------------- */
 
   const nextExercise = async () => {
     if (active < workout.length - 1) {
       triggerSmallConfetti();
       setActive((i) => i + 1);
     } else {
-      await handleCompleteWorkout();
       triggerWinConfetti();
+      toast.success("Workout completed 🎉");
       setDone(true);
     }
   };
 
-
+  /* ---------------- completed ---------------- */
 
   if (done) {
     return (
@@ -162,7 +133,7 @@ export default function WorkoutPage() {
     );
   }
 
-
+  /* ---------------- UI ---------------- */
 
   return (
     <div className="max-w-6xl mx-auto h-[calc(100vh-140px)] space-y-6">

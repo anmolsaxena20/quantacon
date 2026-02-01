@@ -149,6 +149,7 @@ export default function Profile() {
         return;
       }
       console.log("data", data);
+      setImageFile(null);
 
 
       toast.success("Profile picture updated");
