@@ -77,31 +77,38 @@ export const completeWorkout = async (req, res) => {
   try {
     const userId = req.user.id;
     const { exercises, energyLevel, totalDuration } = req.body;
-    const payload = {
-      completed: true,
-      difficulty: energyLevel,
-      duration_minutes: totalDuration,
-      feedback: "Great workout!",
-      user_id: uuidv5(req.user.id.toString(), uuidv5.DNS),
-    };
-    const response = await axios.post(
-      `${process.env.AI_URI}/workout/complete`,
-      payload,
-    );
-    response = response.data;
-    if (!exercises || exercises.length === 0) {
-      return res.status(400).json({ message: "No exercises data provided" });
+
+    if (!Array.isArray(exercises) || exercises.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Exercises must be a non-empty array" });
     }
-    const totalXp = exercises.reduce((sum, ex) => sum + (ex.xpEarned || 0), 0);
+
+    const formattedExercises = exercises.map((ex) => ({
+      exerciseId: ex.exerciseId || null,
+      name: ex.name,
+      repsDone: ex.repsDone || 0,
+      durationDone: ex.durationDone || 0,
+      xpEarned: ex.xpEarned || 0,
+      completed: ex.completed ?? true,
+    }));
+
+    const totalXp = formattedExercises.reduce(
+      (sum, ex) => sum + ex.xpEarned,
+      0,
+    );
+
     await WorkoutSession.create({
       user: userId,
       energyLevel,
-      exercises,
+      exercises: formattedExercises,
       totalXpEarned: totalXp,
       totalDuration,
       completed: true,
     });
+
     let stats = await UserStats.findOne({ user: userId });
+
     if (!stats) {
       stats = await UserStats.create({
         user: userId,
@@ -109,59 +116,46 @@ export const completeWorkout = async (req, res) => {
         totalXp: 0,
         level: 1,
         workoutsCompleted: 0,
-        streak: {
-          current: 0,
-          longest: 0,
-          lastWorkoutDate: null,
-        },
+        streak: { current: 0, longest: 0, lastWorkoutDate: null },
       });
     }
+
     stats.currentXp += totalXp;
     stats.totalXp += totalXp;
     stats.workoutsCompleted += 1;
     stats.level = Math.floor(Math.sqrt(stats.totalXp / 100)) + 1;
+
     const today = new Date();
     const lastDate = stats.streak.lastWorkoutDate;
 
-    const isNewDay =
-      !lastDate || today.toDateString() !== lastDate.toDateString();
+    if (!lastDate || today.toDateString() !== lastDate.toDateString()) {
+      const diffDays = lastDate
+        ? Math.floor((today - lastDate) / (1000 * 60 * 60 * 24))
+        : 1;
 
-    if (isNewDay) {
-      if (lastDate) {
-        const diffDays = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 1) {
-          stats.streak.current += 1;
-        } else {
-          stats.streak.current = 1;
-        }
-      } else {
-        stats.streak.current = 1;
-      }
-
+      stats.streak.current = diffDays === 1 ? stats.streak.current + 1 : 1;
       stats.streak.longest = Math.max(
         stats.streak.longest,
         stats.streak.current,
       );
-
       stats.streak.lastWorkoutDate = today;
     }
+
     await stats.save();
+
     res.json({
       message: "Workout saved successfully",
       xpEarned: totalXp,
       newLevel: stats.level,
       streak: stats.streak.current,
       totalXp: stats.totalXp,
-      ...response,
     });
   } catch (err) {
-    console.error("AI COMPLETE ERROR:", err.response?.data || err);
-    res.status(err.response?.status || 500).json({
-      message: err.response?.data?.detail || "AI server crashed",
-    });
+    console.error("COMPLETE WORKOUT ERROR:", err);
+    res.status(500).json({ message: "Failed to complete workout" });
   }
 };
+
 export const oauthCalendarSuccess = async (req, res) => {
   console.log("calendar access gained");
   res.redirect("http://localhost:5173/");
