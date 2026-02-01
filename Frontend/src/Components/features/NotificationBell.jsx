@@ -1,108 +1,143 @@
-﻿import { Bell, Check, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useNotificationStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+﻿import { useEffect, useState, useRef } from "react";
+import { Bell } from "lucide-react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import toast from "react-hot-toast";
+
+import { socket } from "@/socket/socket";
+
+dayjs.extend(relativeTime);
+
+export default function NotificationDropUp() {
+  const [open, setOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+useEffect(() => {
+  const handleNotification = (newNotification) => {
+    setNotifications((prev) => [newNotification, ...prev]);
+    toast.success("New Notification received");
+  };
+
+  socket.off("notification"); 
+  socket.on("notification", handleNotification);
+
+  return () => {
+    socket.off("notification", handleNotification);
+  };
+}, []);
 
 
-function getRelativeTime(timestamp) {
-    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
-    const diff = (timestamp - Date.now()) / 1000;
+  useEffect(() => {
+    if (!open) return;
 
-    if (diff > -60) return 'Just now';
-    if (diff > -3600) return rtf.format(Math.round(diff / 60), 'minute');
-    if (diff > -86400) return rtf.format(Math.round(diff / 3600), 'hour');
-    return rtf.format(Math.round(diff / 86400), 'day');
-}
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(
+          "http://localhost:5000/api/notification/previous-notifications?limit=20",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-export default function NotificationBell() {
-    const { notifications, markAsRead, markAllAsRead, clearAll, unreadCount } = useNotificationStore();
-    const count = unreadCount();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
 
-    return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="h-5 w-5" />
-                    {count > 0 && (
-                        <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-background animate-pulse" />
-                    )}
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80 p-0" align="end">
-                <div className="flex items-center justify-between p-4 border-b">
-                    <div className="flex items-center gap-2">
-                        <h4 className="font-semibold leading-none">Notifications</h4>
-                        {count > 0 && <Badge variant="secondary" className="px-1.5 py-0.5 h-auto text-xs">{count} new</Badge>}
-                    </div>
-                    {notifications.length > 0 && (
-                        <div className="flex gap-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-muted-foreground hover:text-green-600"
-                                title="Mark all read"
-                                onClick={markAllAsRead}
-                            >
-                                <Check className="h-4 w-4" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-muted-foreground hover:text-red-600"
-                                title="Clear all"
-                                onClick={clearAll}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    )}
+        setNotifications(data.data || []);
+      } catch (err) {
+        toast.error("Failed to load notifications");
+      }
+    };
+
+    fetchNotifications();
+  }, [open]);
+
+  return (
+    <div
+      ref={ref}
+      className="fixed bottom-6 left-21 overflow-visible"
+    >
+      {/* 🔔 Bell */}
+      <button
+        onClick={() => setOpen((p) => !p)}
+        className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-lg hover:scale-105 transition"
+      >
+        <Bell className="h-5 w-5" />
+      </button>
+
+      {/* ⬆️ DROP-UP PANEL */}
+      {open && (
+        <div
+          className="
+            absolute
+            bottom-full
+            left-0
+            mb-3
+            w-80
+            max-w-[90vw]
+            bg-background
+            border
+            border-border
+            rounded-xl
+            shadow-2xl
+            overflow-hidden
+            animate-in
+            slide-in-from-bottom-4
+            fade-in
+          "
+        >
+          {/* Header */}
+          <div className="px-4 py-3 border-b border-border text-sm font-semibold">
+            Notifications
+          </div>
+
+          {/* Content */}
+          <div className="max-h-[320px] overflow-y-auto">
+            {notifications.length === 0 ? (
+              <p className="text-center text-muted-foreground text-sm py-6">
+                No notifications yet
+              </p>
+            ) : (
+              notifications.map((n) => (
+                <div
+                  key={n._id}
+                  className="flex gap-3 px-4 py-3 hover:bg-muted transition border-b border-border last:border-none"
+                >
+                  {/* Avatar */}
+                  <img
+                    src={n.sender?.picture || "/avatar.png"}
+                    alt="sender"
+                    className="w-9 h-9 rounded-full object-cover"
+                  />
+
+                  {/* Text */}
+                  <div className="flex-1">
+                    <p className="text-sm leading-snug">
+                      <span className="font-medium">
+                        {n.sender?.name}
+                      </span>{" "}
+                      {n.message}
+                    </p>
+                    <span className="text-xs text-muted-foreground">
+                      {dayjs(n.createdAt).fromNow()}
+                    </span>
+                  </div>
                 </div>
-                <ScrollArea className="h-[300px]">
-                    {notifications.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full p-8 text-center text-muted-foreground">
-                            <Bell className="h-8 w-8 mb-2 opacity-20" />
-                            <p className="text-sm">No new notifications</p>
-                        </div>
-                    ) : (
-                        <div className="divide-y">
-                            {notifications.map((notification) => (
-                                <div
-                                    key={notification.id}
-                                    className={cn(
-                                        "p-4 hover:bg-muted/50 transition-colors cursor-pointer relative group",
-                                        !notification.read && "bg-primary/5"
-                                    )}
-                                    onClick={() => markAsRead(notification.id)}
-                                >
-                                    <div className="flex justify-between items-start gap-3">
-                                        <div className="space-y-1">
-                                            <p className={cn("text-sm font-medium leading-none", notification.read && "text-muted-foreground")}>
-                                                {notification.title}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground line-clamp-2">
-                                                {notification.message}
-                                            </p>
-                                            <p className="text-[10px] text-muted-foreground pt-1">
-                                                {getRelativeTime(notification.timestamp)}
-                                            </p>
-                                        </div>
-                                        {!notification.read && (
-                                            <span className="h-2 w-2 rounded-full bg-primary mt-1 shrink-0" />
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </ScrollArea>
-            </PopoverContent>
-        </Popover>
-    );
+              ))
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
