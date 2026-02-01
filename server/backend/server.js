@@ -3,6 +3,7 @@ import http from "http";
 import mongoose from "mongoose";
 import app from "./src/app.js";
 import { initSocket } from "./src/socket/socket.js";
+import "./src/cron/progress.cron.js"
 const PORT = process.env.PORT || 3000;
 
 mongoose.connect(process.env.MONGO_URI).then(() => {
