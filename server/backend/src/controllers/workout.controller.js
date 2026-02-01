@@ -260,9 +260,7 @@ export const getDashboardStats = async (req, res) => {
       date: { $gte: startOfMonth, $lt: endOfMonth },
     }).select("date");
 
-    const workoutDays = monthlySessions.map((s) =>
-      new Date(s.date).getUTCDate(),
-    );
+    const workoutDays = monthlySessions.map((s) => s.date);
 
     res.json({
       level: stats.level,
