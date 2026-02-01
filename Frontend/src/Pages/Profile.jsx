@@ -223,7 +223,7 @@ export default function Profile() {
       <Card className="bg-card/80 backdrop-blur border-border/50">
         <CardHeader className="flex flex-row items-center gap-6">
           <div className="relative">
-            <div className="w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-violet-500 flex items-center justify-center">
+            <div className={`w-24 h-24 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-violet-500 flex items-center justify-center border-4 ${profile.tier === 'gold' ? 'border-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.3)]' : profile.tier === 'silver' ? 'border-slate-300 shadow-[0_0_15px_rgba(203,213,225,0.3)]' : 'border-transparent'}`}>
               {profile.image ? (
                 <img
                   src={profile.image}
@@ -254,7 +254,11 @@ export default function Profile() {
           </div>
 
           <div>
-            <CardTitle className="text-xl flex">{profile.name}{profile.tier != "free" && <Check color="#2321c0" />}</CardTitle>
+            <CardTitle className="text-xl flex items-center gap-2">
+              {profile.name}
+              {profile.tier === 'gold' && <Check className="text-yellow-500" />}
+              {profile.tier === 'silver' && <Check className="text-slate-300" />}
+            </CardTitle>
 
             <CardDescription>{profile.email}</CardDescription>
           </div>
