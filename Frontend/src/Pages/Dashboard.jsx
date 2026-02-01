@@ -8,6 +8,9 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import useAuth from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { useEffect, useState } from "react";
+import WorkoutCalendar from "@/Components/Workout/WorkoutCalendar";
 
 export default function Dashboard() {
     const handleStreakClick = () => {
@@ -20,6 +23,7 @@ export default function Dashboard() {
         });
     };
     const navigate = useNavigate();
+    const[stats,setStats] = useState(null);
 
     const container = {
         hidden: { opacity: 0 },
@@ -37,6 +41,35 @@ export default function Dashboard() {
     };
 
     const { user } = useAuth();
+
+    const fetchDashboardData = async()=>{
+        const token = localStorage.getItem("token");
+        const now = new Date(Date.now());
+        const month = now.getMonth()+1;
+        const year = now.getFullYear();
+        if(!token){
+            toast.error("invalid session");
+            return;
+        }
+        const res = await fetch(`http://localhost:5000/api/workout/stats?month=${month}&year=${year}`,
+            {
+                method:"GET",
+                headers:{
+                    "Authorization":`Bearer ${token}`
+                }
+            }
+        )
+        if(!res.ok){
+            toast.error("Error in fetching dashboard stats");
+            return;
+        }
+        const stats = await res.json();
+        console.log("stats",stats);
+        setStats(stats);
+    }
+    useEffect(()=>{
+        fetchDashboardData();
+    },[])
     return (
         <motion.div
             variants={container}
@@ -57,7 +90,7 @@ export default function Dashboard() {
                     whileTap={{ scale: 0.95 }}
                 >
                     <Badge variant="secondary" className="text-sm px-3 py-1 hover:bg-secondary/80 transition-colors">
-                        <Flame className="h-4 w-4 mr-1 text-orange-500" /> 5 Day Streak
+                        <Flame className="h-4 w-4 mr-1 text-orange-500" /> {stats?.streak} Day Streak
                     </Badge>
                 </motion.div>
                 <div className="flex gap-2">
@@ -83,17 +116,7 @@ export default function Dashboard() {
                                 <CardTitle className="text-lg">Monthly Progress</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="flex justify-between items-end h-[100px] mb-2">
-                                    {["M", "T", "W", "T", "F", "S", "S"].map((day, i) => (
-                                        <div key={i} className="flex flex-col items-center gap-1 group">
-                                            <div
-                                                className={`w-8 rounded-t-sm transition-all duration-500 ${i < 5 ? "bg-primary group-hover:bg-primary/80" : "bg-muted"}`}
-                                                style={{ height: `${i < 5 ? Math.random() * 80 + 20 : 10}%` }}
-                                            />
-                                            <span className="text-xs text-muted-foreground">{day}</span>
-                                        </div>
-                                    ))}
-                                </div>
+                                <WorkoutCalendar workoutDates={stats?.workoutDays}/>
                                 <p className="text-center text-sm font-medium">You're consistent!</p>
                             </CardContent>
                         </Card>
@@ -108,11 +131,11 @@ export default function Dashboard() {
                                         <Trophy className="h-5 w-5 text-yellow-600" />
                                     </div>
                                     <div>
-                                        <p className="font-bold">Level 3</p>
-                                        <p className="text-xs text-muted-foreground">500 XP to Level 4</p>
+                                        <p className="font-bold">Level {stats?.level}</p>
+                                        <p className="text-xs text-muted-foreground">{stats?.xpToNextLevel} XP to Level 4</p>
                                     </div>
                                 </div>
-                                <Progress value={66} className="mt-4 h-2" />
+                                <Progress value={stats?.currentXp} className="mt-4 h-2" />
                             </CardContent>
                         </Card>
                     </motion.div>
