@@ -22,17 +22,10 @@ export const sendNotification = async ({
     chat,
     message,
   });
-
+  (await notification.populate("sender", "name picture")).populate(
+    "comment",
+    "text",
+  );
   const io = getSocketInstance();
-  io.to(recipient.toString()).emit("notification", {
-    id: notification._id,
-    type,
-    sender,
-    post,
-    reel,
-    comment,
-    chat,
-    message,
-    createdAt: notification.createdAt,
-  });
+  io.to(recipient.toString()).emit("notification", notification.toObject());
 };
