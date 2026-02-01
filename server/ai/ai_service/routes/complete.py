@@ -121,15 +121,11 @@ async def complete_workout(request: CompleteWorkoutRequest):
         workout_data = {
             "user_id": request.user_id,
             "completed": request.completed,
-            "difficulty": request.difficulty,
-            "created_at": datetime.now(timezone.utc)
+            "difficulty": request.difficulty
         }
 
-        if request.feedback:
-            workout_data["feedback"] = request.feedback
-
         if request.duration_minutes:
-            workout_data["duration_minutes"] = request.duration_minutes
+            workout_data["time_available"] = request.duration_minutes
 
         await save_workout(**workout_data)
     except Exception as e:
