@@ -9,7 +9,30 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/jwt.util.js";
+import jwt from "jsonwebtoken";
+export const refreshAccessToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
 
+    if (!refreshToken) {
+      return res.status(401).json({ message: "No refresh token" });
+    }
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user || user.refreshToken !== refreshToken) {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
+
+    const newAccessToken = generateAccessToken({
+      id: user._id,
+      tier: user.tier,
+    });
+    res.json({ accessToken: newAccessToken });
+  } catch (err) {
+    return res.status(403).json({ message: "Refresh token expired" });
+  }
+};
 export const signup = async (req, res) => {
   try {
     console.log("signup request received");
