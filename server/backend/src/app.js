@@ -30,7 +30,7 @@ app.use("/api/social/chat", requireAuth, chatRoutes);
 app.use("/api/users", requireAuth, userRoutes);
 app.use("/api/workout", requireAuth, workoutRoutes);
 app.use("/api/progress", requireAuth, progressRoutes);
-app.use("/api/notification",requireAuth,notif)
+app.use("/api/notification",requireAuth,notificationRoutes)
 app.use(
   "/api/ai/chat",
   requireAuth,

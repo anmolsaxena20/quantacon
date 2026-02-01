@@ -214,7 +214,7 @@ export const getDashboardStats = async (req, res) => {
     const startOfMonth = new Date(Date.UTC(year, month - 1, 1));
     const endOfMonth = new Date(Date.UTC(year, month, 1));
 
-    const monthlySessions = await WorkoutSessions.find({
+    const monthlySessions = await WorkoutSession.find({
       user: userId,
       completed: true,
       date: { $gte: startOfMonth, $lt: endOfMonth },
