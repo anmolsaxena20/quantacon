@@ -10,34 +10,41 @@ export const generateWorkout = async (req, res) => {
 
     const day = new Date().getDay();
     let muscleGroups;
-
+    let title;
     switch (day) {
       case 1:
         muscleGroups = ["chest", "triceps"];
+        title = "Chest And Triceps";
         break;
 
       case 2:
         muscleGroups = ["back", "biceps"];
+        title = "Back And Biceps";
         break;
 
       case 3:
         muscleGroups = ["legs", "glutes"];
+        title = "Legs And Glutes";
         break;
 
       case 4:
         muscleGroups = ["shoulders", "core"];
+        title = "Shoulders And Core";
         break;
 
       case 5:
         muscleGroups = ["core", "cardio"];
+        title = "Core And Cardio";
         break;
 
       case 6:
         muscleGroups = ["legs", "cardio"];
+        title = "Legs And Cardio";
         break;
 
       default:
         muscleGroups = ["full body", "cardio"];
+        title = "Full Body And Cardio";
     }
 
     const exercises = await Exercise.find({
@@ -54,7 +61,7 @@ export const generateWorkout = async (req, res) => {
     }));
     console.log("plan=", plan);
     const response = {
-      title: "Upper Body Power",
+      title: title,
       difficulty: energyLevel,
       estimatedTime: plan.reduce((t, e) => t + e.duration, 0),
       exercises: plan,
