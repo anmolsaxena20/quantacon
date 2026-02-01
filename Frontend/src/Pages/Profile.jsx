@@ -14,7 +14,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Camera ,Check} from "lucide-react";
+import { Camera, Check } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import useAuth from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 export default function Profile() {
   const [editing, setEditing] = useState(false);
   const { user, setUser } = useAuth();
-  console.log("user in profile",user)
+  console.log("user in profile", user)
 
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function Profile() {
     weight: "",
     image: "",
     gender: "",
-    tier:""
+    tier: ""
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -43,6 +43,27 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showList, setShowList] = useState(null);
+  const [bmi, setBmi] = useState(null);
+
+  useEffect(() => {
+    if (profile.height && profile.weight) {
+      const h = parseFloat(profile.height) / 100; // cm to m
+      const w = parseFloat(profile.weight);
+      if (h > 0 && w > 0) {
+        const bmiValue = (w / (h * h)).toFixed(1);
+        setBmi(bmiValue);
+      } else {
+        setBmi(null);
+      }
+    }
+  }, [profile.height, profile.weight]);
+
+  const getBmiCategory = (bmi) => {
+    if (bmi < 18.5) return { label: "Underweight", color: "text-blue-400" };
+    if (bmi < 24.9) return { label: "Normal Weight", color: "text-green-400" };
+    if (bmi < 29.9) return { label: "Overweight", color: "text-yellow-400" };
+    return { label: "Obese", color: "text-red-400" };
+  };
   useEffect(() => {
     if (!user) return;
 
@@ -53,7 +74,7 @@ export default function Profile() {
       weight: user.weight || "75",
       image: user.picture || "",
       gender: user.gender || "",
-      tier:user.tier ||"free"
+      tier: user.tier || "free"
     });
   }, [user]);
 
@@ -124,12 +145,12 @@ export default function Profile() {
       const data = await res.json();
       if (!res.ok) {
         toast.error("error in updating profile picture");
-        
+
         return;
       }
-      console.log("data",data);
+      console.log("data", data);
 
-      
+
       toast.success("Profile picture updated");
     } catch {
       toast.error("Failed to update picture");
@@ -209,13 +230,13 @@ export default function Profile() {
                   alt="profile"
                   className="w-full h-full object-cover"
                 />
-                
+
               ) : (
-                  <span className="text-3xl font-bold">
-                    {profile.name?.[0]}<span><Check color="#2321c0"/></span>
+                <span className="text-3xl font-bold">
+                  {profile.name?.[0]}<span><Check color="#2321c0" /></span>
                 </span>
               )}
-              
+
               <button
                 onClick={() => fileInputRef.current.click()}
                 className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-background border border-border flex items-center justify-center"
@@ -233,8 +254,8 @@ export default function Profile() {
           </div>
 
           <div>
-            <CardTitle className="text-xl flex">{profile.name}{profile.tier!="free" &&<Check color="#2321c0"/>}</CardTitle>
-           
+            <CardTitle className="text-xl flex">{profile.name}{profile.tier != "free" && <Check color="#2321c0" />}</CardTitle>
+
             <CardDescription>{profile.email}</CardDescription>
           </div>
         </CardHeader>
@@ -250,25 +271,40 @@ export default function Profile() {
             <Input name="weight" value={profile.weight} onChange={handleChange} disabled={!editing} />
             <Input name="weight" value={profile.gender} onChange={handleChange} disabled={!editing} />
           </div>
-          <div className="flex gap-6 justify-start text-sm">
+
+          {bmi && (
+            <div className="mt-2 p-4 bg-muted/10 rounded-lg flex items-center justify-between border border-border/50">
+              <div>
+                <p className="text-sm text-gray-400">Your BMI</p>
+                <p className="text-2xl font-bold">{bmi}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-400">Category</p>
+                <p className={`text-lg font-semibold ${getBmiCategory(bmi).color}`}>
+                  {getBmiCategory(bmi).label}
+                </p>
+              </div>
+            </div>
+          )}
+          <div className="flex gap-4 w-full">
             <button
               onClick={() => setShowList("followers")}
-              className="hover:underline"
+              className="flex-1 bg-muted/10 hover:bg-muted/20 border border-border/50 rounded-xl p-4 transition-all hover:scale-[1.02] active:scale-[0.98] group text-left"
             >
-              <span className="font-semibold">
+              <p className="text-sm text-gray-400 font-medium group-hover:text-primary/80 transition-colors">Followers</p>
+              <p className="text-3xl font-heading font-bold mt-1 group-hover:text-primary transition-colors">
                 {user?.followers?.length || 0}
-              </span>{" "}
-              Followers
+              </p>
             </button>
 
             <button
               onClick={() => setShowList("following")}
-              className="hover:underline"
+              className="flex-1 bg-muted/10 hover:bg-muted/20 border border-border/50 rounded-xl p-4 transition-all hover:scale-[1.02] active:scale-[0.98] group text-left"
             >
-              <span className="font-semibold">
+              <p className="text-sm text-gray-400 font-medium group-hover:text-primary/80 transition-colors">Following</p>
+              <p className="text-3xl font-heading font-bold mt-1 group-hover:text-primary transition-colors">
                 {user?.following?.length || 0}
-              </span>{" "}
-              Following
+              </p>
             </button>
           </div>
 
@@ -327,36 +363,58 @@ export default function Profile() {
           )}
         </CardContent>
         {showList && (
-          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-            <Card className="w-full max-w-md bg-card border-border">
-              <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle className="text-lg capitalize">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+            <Card className="w-full max-w-md bg-card/95 border-border shadow-2xl scale-100 animate-in zoom-in-95 duration-200">
+              <CardHeader className="flex flex-row justify-between items-center border-b border-border/50 pb-4">
+                <CardTitle className="text-xl capitalize font-heading flex items-center gap-2">
+                  <span className="bg-primary/10 text-primary p-2 rounded-full">
+                    {showList === "followers" ? "👥" : "👣"}
+                  </span>
                   {showList}
                 </CardTitle>
-                <Button variant="ghost" onClick={() => setShowList(null)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                  onClick={() => setShowList(null)}
+                >
                   ✕
                 </Button>
               </CardHeader>
 
-              <CardContent className="space-y-4 max-h-[400px] overflow-y-auto">
+              <CardContent className="p-0 max-h-[400px] overflow-y-auto custom-scrollbar">
                 {user?.[showList]?.length === 0 ? (
-                  <p className="text-muted-foreground text-sm text-center">
-                    No {showList} yet
-                  </p>
+                  <div className="flex flex-col items-center justify-center py-12 text-muted-foreground space-y-3">
+                    <span className="text-4xl">📭</span>
+                    <p className="text-sm">No {showList} found</p>
+                  </div>
                 ) : (
-                  user[showList].map((u) => (
-                    <div
-                      key={u._id}
-                      className="flex items-center gap-3"
-                    >
-                      <img
-                        src={u.picture}
-                        alt=""
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <span className="font-medium">{u.name}</span>
-                    </div>
-                  ))
+                  <div className="p-4 space-y-2">
+                    {user[showList].map((u) => (
+                      <div
+                        key={u._id}
+                        className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-all group border border-transparent hover:border-border/50 cursor-pointer"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="relative">
+                            <img
+                              src={u.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${u.name}`}
+                              alt={u.name}
+                              className="w-12 h-12 rounded-full object-cover border-2 border-background shadow-sm group-hover:scale-105 transition-transform"
+                            />
+                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-foreground group-hover:text-primary transition-colors">{u.name}</p>
+                            <p className="text-xs text-muted-foreground">User</p>
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          View
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </CardContent>
             </Card>
