@@ -85,7 +85,7 @@ export default function WorkoutPage() {
 
   const current = workout[active];
 
- 
+
 
   useEffect(() => {
     if (!running || timer <= 0) return;
@@ -108,13 +108,43 @@ export default function WorkoutPage() {
   }, [visuals]);
 
 
+  const handleCompleteWorkout = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const totalDurationSeconds = workout.reduce((acc, curr) => acc + curr.time, 0);
+      const totalDurationMinutes = Math.ceil(totalDurationSeconds / 60);
+
+      const res = await fetch("http://localhost:5000/api/workout/complete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          exercises: workout,
+          energyLevel: aiData.difficulty,
+          totalDuration: totalDurationMinutes,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to save workout");
+
+      toast.success("Workout saved successfully!");
+    } catch (error) {
+      console.error("Save workout error:", error);
+      toast.error("Cloudn't save workout progress");
+    }
+  };
+
   const nextExercise = async () => {
     if (active < workout.length - 1) {
       triggerSmallConfetti();
       setActive((i) => i + 1);
     } else {
+      await handleCompleteWorkout();
       triggerWinConfetti();
-      toast.success("Workout completed 🎉");
       setDone(true);
     }
   };
@@ -132,7 +162,7 @@ export default function WorkoutPage() {
     );
   }
 
- 
+
 
   return (
     <div className="max-w-6xl mx-auto h-[calc(100vh-140px)] space-y-6">
