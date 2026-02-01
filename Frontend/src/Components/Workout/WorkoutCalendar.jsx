@@ -5,9 +5,9 @@ const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 export default function WorkoutCalendar({ workoutDates = [] }) {
   const today = new Date();
   const year = today.getFullYear();
-  const month = today.getMonth(); 
+  const month = today.getMonth();
 
-  
+
   const firstDay = new Date(year, month, 1);
   const startDay = (firstDay.getDay() + 6) % 7;
 
@@ -25,7 +25,7 @@ export default function WorkoutCalendar({ workoutDates = [] }) {
     return set;
   }, [workoutDates, month, year]);
 
-  
+
   const cells = [];
 
   for (let i = 0; i < startDay; i++) {
@@ -40,7 +40,7 @@ export default function WorkoutCalendar({ workoutDates = [] }) {
   }
 
   return (
-    <div className="w-fit rounded-xl bg-black p-4 text-white">
+    <div className="w-fit rounded-xl bg-card border p-4 text-card-foreground">
       {/* Week Header */}
       <div className="grid grid-cols-7 gap-3 mb-3 text-xs text-muted-foreground">
         {WEEK_DAYS.map((d) => (
@@ -62,8 +62,8 @@ export default function WorkoutCalendar({ workoutDates = [] }) {
               title={`Day ${cell.day}`}
               className={`
                 h-10 w-10 flex items-center justify-center rounded-full
-                border border-neutral-700
-                ${cell.workout ? "bg-orange-500" : "bg-neutral-900"}
+                border
+                ${cell.workout ? "bg-orange-500 border-orange-500 text-white" : "bg-muted border-transparent"}
               `}
             >
               {cell.workout ? "🔥" : `${cell.day}`}
