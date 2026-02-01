@@ -1,5 +1,9 @@
 import express from "express";
 const router = express.Router();
-import { getAiGuidance } from "../controllers/ai.controller.js";
+import {
+  getAiGuidance,
+  getAiMotivation,
+} from "../controllers/ai.controller.js";
 router.post("/guidance", getAiGuidance);
+router.post("/motivate", getAiMotivation);
 export default router;
