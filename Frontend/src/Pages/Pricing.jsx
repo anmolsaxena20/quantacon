@@ -7,7 +7,7 @@ import useAuth from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const PricingSync = () => {
-    const { user } = useAuth();
+    const { user,setUser } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
@@ -95,6 +95,7 @@ const PricingSync = () => {
 
                         if (verifyRes.ok) {
                             toast.success("Payment Successful! Welcome to " + planId + " tier.");
+                            localStorage.setItem("token",verifyData.accessToken);
                             navigate("/dashboard");
                         } else {
                             console.log("error hai",verifyData.message )

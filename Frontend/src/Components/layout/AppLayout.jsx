@@ -30,6 +30,7 @@ export default function AppLayout() {
     const location = useLocation();
     const navigate = useNavigate();
     const { setTheme, theme } = useTheme();
+    const{user} = useAuth();
 
     const navItems = [
         { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -37,7 +38,7 @@ export default function AppLayout() {
         { icon: PenTool, label: "Create Plan", path: "/create-workout" },
         { icon: Users, label: "Community", path: "/community/social" },
         { icon: TrendingUp, label: "Progress", path: "/progress" },
-        { icon: UserCircle, label: "Profile", path: "community/profile-setup" },
+        { icon: UserCircle, label: "Profile", path: "/community/profile-setup" },
     ];
 
     const { addNotification } = useNotificationStore();
@@ -127,14 +128,14 @@ export default function AppLayout() {
                         <div className={cn("flex items-center gap-4", isCollapsed ? "justify-center flex-col" : "px-1")}>
                             <Avatar className="h-12 w-12 border-2 border-primary cursor-pointer hover:scale-105 transition-transform shadow-sm">
                                 <AvatarImage
-                                    onClick={() => { navigate('/community/profile-setup') }}
-                                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=guest" />
-                                <AvatarFallback>G</AvatarFallback>
+                                    onClick={ ()=>navigate('/community/profile-setup') }
+                                    src={user?.picture}/>
+                                <AvatarFallback onClick={ ()=>navigate('/community/profile-setup') }>{user?.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             {!isCollapsed && (
                                 <div className="flex-1 overflow-hidden animate-in fade-in duration-300">
-                                    <p className="text-base font-bold truncate">Guest User</p>
-                                    <p className="text-xs text-muted-foreground truncate">Free Plan</p>
+                                    <p className="text-base font-bold truncate">{user?.name}</p>
+                                    <p className="text-xs text-muted-foreground truncate">{user?.tier}</p>
                                 </div>
                             )}
 

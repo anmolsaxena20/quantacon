@@ -175,12 +175,12 @@ const sendMessage = async () => {
 
   const renderMessage = (msg, isMe) => {
     if (msg.messageType === "image")
-      return <img src={msg.content} className="max-w-[240px] rounded-lg" />;
+      return <img src={msg.content} className="max-w-[240px] rounded-lg mb-2" />;
 
     if (msg.messageType === "video")
       return <video src={msg.content} controls className="max-w-[260px]" />;
 
-    return <p>{msg.content}</p>;
+    return <p >{msg.content}</p>;
   };
 
   const otherUser =
@@ -225,7 +225,7 @@ const sendMessage = async () => {
               }`}
             >
               <div
-                className={`px-3 py-2 rounded-2xl max-w-[70%] text-sm ${
+                className={`px-3 py-2 rounded-2xl max-w-[70%] text-sm mb-8 ${
                   isMe
                     ? "bg-purple-600 text-white rounded-br-none"
                     : "bg-muted rounded-bl-none"
@@ -268,7 +268,7 @@ const sendMessage = async () => {
 
 
      
-       <div className="border-t p-3 flex items-center gap-2">
+       <div className="border-t p-3  flex items-center gap-2 w-full fixed bottom-0  bg-black">
         <input
           type="file"
           accept="image/*,video/*"
