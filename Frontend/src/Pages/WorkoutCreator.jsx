@@ -18,13 +18,13 @@ export default function WorkoutCreator() {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
 
-    const [selectedIntensity, setSelectedIntensity] = useState("Medium");
+    const [selectedIntensity, setSelectedIntensity] = useState("medium");
     const [selectedBodyParts, setSelectedBodyParts] = useState(["Full Body"]);
     const [duration, setDuration] = useState([30]);
 
-    const [generatedWorkout, setGeneratedWorkout] = useState([]);
+    const [generatedWorkout, setGeneratedWorkout] = useState(null);
 
-    const intensities = ["Low", "Medium", "High"];
+    const intensities = ["low", "medium", "high"];
     const bodyParts = [
         "Full Body", "Chest", "Back", "Shoulders", "Biceps", "Triceps", "Legs", "Core", "Cardio"
     ];
@@ -80,6 +80,38 @@ export default function WorkoutCreator() {
         toast.success("Workout generated! Customize any details below.");
     };
 
+    const fetchGenerateWorkout=async()=>{
+        const token = localStorage.getItem("token");
+        if(!selectedIntensity && !duration && !selectedBodyParts){
+            toast.error("please provide all reqired fields");
+            return;
+        }
+        if(!token){
+            toast.error("invalid session");
+            return;
+        }
+        const res = await fetch("http://localhost:5000/api/ai/generate",
+            {
+                method:"POST",
+                headers:{
+                    "Authorization":`Bearer ${token}`,
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({energyLevel:selectedIntensity,time:duration[0],goal:selectedBodyParts.join(" ")})
+            }
+        )
+        if(!res.ok){
+            toast.error("errror in generating workout");
+            return;
+        }
+        const workout = await res.json();
+        console.log("generated workout",workout);
+        setGeneratedWorkout(workout);
+        navigate("/workout",{
+            state:{aiData:workout}
+        })
+
+    }
     const updateExercise = (index, field, value) => {
         const updated = [...generatedWorkout];
         updated[index] = { ...updated[index], [field]: value };
@@ -210,7 +242,7 @@ export default function WorkoutCreator() {
                                 <Button
                                     size="lg"
                                     className="w-full text-lg h-14 rounded-xl shadow-xl shadow-primary/25 mt-4 group"
-                                    onClick={generateWorkout}
+                                    onClick={fetchGenerateWorkout}
                                 >
                                     Generate Workout <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                                 </Button>

@@ -22,6 +22,7 @@ import CreateWorkoutAlarm from "@/Pages/WorkoutAlarm"
 import NotFound from "./Pages/NotFoundPage";
 import ProtectedRoute from "./Components/layout/ProtectedLayout";
 import ChatWindow from "./components/chat/ChatWindow";
+import WorkoutPage from "./Pages/workoutPage";
 function App() {
     return (
         <BrowserRouter>
@@ -31,9 +32,8 @@ function App() {
                     <Route index element={<Navigate to="/login" replace />} />
                     <Route element={<ProtectedRoute/>}>
                     <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="workout" element={<Workout />} />
+                    <Route path="workout" element={<WorkoutPage />} />
                     <Route path="create-workout" element={<WorkoutCreator />} />
-                    <Route path="progress" element={<ProgressPage />} />
                     <Route path="progress" element={<ProgressPage />} />
                     <Route path="community/profile-setup" element={<ProfileSetup />} />
                     <Route path="pricing" element={<PricingSync />} />

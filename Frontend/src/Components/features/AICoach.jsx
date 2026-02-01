@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast, { Toaster } from "react-hot-toast";
+import useAuth from "@/Context/AuthContext";
 
 const EXERCISES = [
   "Chest",
@@ -33,6 +34,8 @@ const EXERCISES = [
 ];
 
 export default function AICoach() {
+  const {user} = useAuth();
+ 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -47,13 +50,11 @@ export default function AICoach() {
 
   const scrollRef = useRef(null);
 
-  /* ---------- AUTO SCROLL (FIXED) ---------- */
   useLayoutEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, isOpen]);
 
-  /* ---------- TOGGLE EXERCISES ---------- */
   const toggleExercise = (ex) => {
     setSelectedExercises((prev) =>
       prev.includes(ex)
@@ -62,7 +63,9 @@ export default function AICoach() {
     );
   };
 
-  /* ---------- SEND MESSAGE ---------- */
+const handlePlan = ()=>{
+  toast.error("please upgrad your plan to see this feature");
+}
   const handleSend = async () => {
     if (!input.trim() && selectedExercises.length === 0) return;
 
@@ -119,9 +122,17 @@ export default function AICoach() {
     <div className="fixed bottom-6 right-6 z-50">
       <Toaster />
 
-      {!isOpen && (
+      {user?.tier!="free" && !isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
+          className="h-14 w-14 rounded-full shadow-xl"
+        >
+          <MessageCircle className="h-8 w-8" />
+        </Button>
+      )}
+      {user?.tier=="free" && !isOpen && (
+        <Button
+          onClick={handlePlan}
           className="h-14 w-14 rounded-full shadow-xl"
         >
           <MessageCircle className="h-8 w-8" />
@@ -130,7 +141,7 @@ export default function AICoach() {
 
       {isOpen && (
         <Card className="w-[350px] h-[500px] flex flex-col shadow-2xl">
-          {/* HEADER */}
+        
           <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
             <div className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-primary" />
@@ -145,7 +156,7 @@ export default function AICoach() {
             </Button>
           </CardHeader>
 
-          {/* CHAT BODY */}
+       
           <CardContent className="flex-1 p-0 overflow-hidden">
             <ScrollArea className="h-full">
               <div ref={scrollRef} className="p-4 space-y-3">

@@ -157,10 +157,10 @@ export default function AppLayout() {
                 </div>
               )}
 
-              {/* Collapsed Bell */}
+              
               {isCollapsed && <NotificationBell />}
 
-              {/* Actions */}
+             
               {!isCollapsed && (
                 <div className="flex items-center gap-1">
                   <Button
@@ -193,7 +193,7 @@ export default function AppLayout() {
         </aside>
 
         <main className="flex-1 relative overflow-y-auto h-screen bg-secondary/10">
-          {/* Mobile Header */}
+         
           <header className="h-16 border-b bg-card/80 backdrop-blur-md flex items-center justify-between px-6 md:hidden">
             <Button variant="ghost" size="icon">
               <Menu className="h-6 w-6" />
