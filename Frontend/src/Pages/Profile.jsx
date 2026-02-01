@@ -257,8 +257,8 @@ export default function Profile() {
           <div>
             <CardTitle className="text-xl flex items-center gap-2">
               {profile.name}
-              {profile.tier === 'gold' && <BadgeCheck className="text-yellow-500 fill-yellow-500 text-white w-6 h-6 drop-shadow-md" />}
-              {profile.tier === 'silver' && <BadgeCheck className="text-slate-400 fill-slate-400 text-white w-6 h-6 drop-shadow-md" />}
+              {profile.tier === 'gold' && <BadgeCheck className="text-yellow-500 fill-yellow-500  w-6 h-6 drop-shadow-md" />}
+              {profile.tier === 'silver' && <BadgeCheck className="text-slate-400 fill-slate-400  w-6 h-6 drop-shadow-md" />}
             </CardTitle>
 
             <CardDescription>{profile.email}</CardDescription>
