@@ -2,11 +2,13 @@ import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import Message from "../models/message.model.js";
 import Chat from "../models/chat.model.js";
+import { setSocketInstance } from "../utils/socketInstance.util.js";
 import "dotenv/config";
 export const initSocket = (server) => {
   const io = new Server(server, {
     cors: { origin: process.env.CORS_ORIGIN.split(","), credentials: true },
   });
+  setSocketInstance(io);
   io.use(async (socket, next) => {
     try {
       const token = socket.handshake.auth?.token;
@@ -20,7 +22,7 @@ export const initSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("User Connected");
+    socket.join(socket.user.id.toString());
     socket.on("join_chat", async ({ chatId }) => {
       const chat = await Chat.findById(chatId).select("members");
       if (!chat) return;
