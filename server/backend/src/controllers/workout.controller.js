@@ -181,7 +181,9 @@ export const createWorkoutAlarm = async (req, res) => {
       { headers: { Authorization: `Bearer ${token}` } },
     );
     console.log(result);
-    res.status(200).json({ message: "alarm created successfully" });
+    res.redirect("http://localhost:5173/workout-alarm", {
+      message: "Alarm Set Successfully",
+    });
   } catch (err) {
     if (err.message === "Google reconnect required") {
       return res.status(401).json({
