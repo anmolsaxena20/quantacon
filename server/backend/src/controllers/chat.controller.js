@@ -1,6 +1,7 @@
 import Chat from "../models/chat.model.js";
 import Message from "../models/message.model.js";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload.util.js";
+import { sendNotification } from "../utils/notification.util.js";
 export const getAllChatsByUser = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -44,6 +45,16 @@ export const createChat = async (req, res) => {
     const fullGroupChat = await Chat.findById(groupChat._id)
       .populate("members", "name picture")
       .populate("groupAdmins", "name picture");
+    for (const memberId of uniqueMembers) {
+      if (memberId.toString() === creatorId.toString()) continue;
+      await sendNotification({
+        recipient: memberId,
+        sender: creatorId,
+        type: "MESSAGE",
+        chat: groupChat._id,
+        message: `added you to group "${chatName}"`,
+      });
+    }
     res.status(201).json(fullGroupChat);
   } catch (error) {
     console.error("Create group chat error:", error);

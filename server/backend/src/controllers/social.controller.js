@@ -4,7 +4,6 @@ import Reel from "../models/reel.model.js";
 import Comment from "../models/comment.model.js";
 import { sendNotification } from "../utils/notification.util.js";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload.util.js";
-import { getSocketInstance } from "../utils/socketInstance.util.js";
 export const createPost = async (req, res) => {
   try {
     const file = req.file;
