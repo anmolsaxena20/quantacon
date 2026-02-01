@@ -10,6 +10,7 @@ import calendarRoutes from "./routes/calendar.routes.js";
 import chatRoutes from "./routes/chat.routes.js";
 import aiChatBotRoutes from "./routes/aiChatBot.routes.js";
 import progressRoutes from "./routes/progress.routes.js";
+import notificationRoutes from "./routes/notification.routes.js"
 import { requireAuth } from "./middlewares/auth.middleware.js";
 import { allowTiers } from "./middlewares/tier.middleware.js";
 import passport from "./config/passport.config.js";
@@ -29,6 +30,7 @@ app.use("/api/social/chat", requireAuth, chatRoutes);
 app.use("/api/users", requireAuth, userRoutes);
 app.use("/api/workout", requireAuth, workoutRoutes);
 app.use("/api/progress", requireAuth, progressRoutes);
+app.use("/api/notification",requireAuth,notif)
 app.use(
   "/api/ai/chat",
   requireAuth,

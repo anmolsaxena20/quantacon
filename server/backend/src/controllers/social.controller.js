@@ -2,7 +2,10 @@ import User from "../models/user.model.js";
 import Post from "../models/post.model.js";
 import Reel from "../models/reel.model.js";
 import Comment from "../models/comment.model.js";
+import Notifications from "../models/notifications.model.js";
 import { uploadToCloudinary } from "../utils/cloudinaryUpload.util.js";
+import { getSocketInstance } from "../utils/socketInstance.util.js";
+const io = getSocketInstance();
 export const createPost = async (req, res) => {
   try {
     const file = req.file;
@@ -63,7 +66,13 @@ export const followUser = async (req, res) => {
     if (userId === targetId) {
       return res.status(400).json({ message: "Cannot follow yourself" });
     }
-
+    const name = await User.findById(userId).select("name");
+    io.to(targetId.toString()).emit("notification", {
+      type: "follow",
+      sender: name,
+      senderId: userId,
+      message: `${name} has started following you`,
+    });
     await User.findByIdAndUpdate(userId, {
       $addToSet: { following: targetId },
     });
