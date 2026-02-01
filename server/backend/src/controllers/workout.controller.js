@@ -8,38 +8,60 @@ export const generateWorkout = async (req, res) => {
   try {
     const { energyLevel } = req.body;
 
+    const day = new Date().getDay();
     let muscleGroups;
 
-    const day = new Date().getDay();
+    switch (day) {
+      case 1:
+        muscleGroups = ["chest", "triceps"];
+        break;
 
-    if (day === 1) muscleGroups = ["chest", "triceps"];
-    else if (day === 2) muscleGroups = ["back", "biceps"];
-    else if (day === 3) muscleGroups = ["legs"];
-    else if (day === 4) muscleGroups = ["shoulders", "core"];
-    else muscleGroups = ["fullBody"];
+      case 2:
+        muscleGroups = ["back", "biceps"];
+        break;
+
+      case 3:
+        muscleGroups = ["legs", "glutes"];
+        break;
+
+      case 4:
+        muscleGroups = ["shoulders", "core"];
+        break;
+
+      case 5:
+        muscleGroups = ["core", "cardio"];
+        break;
+
+      case 6:
+        muscleGroups = ["legs", "cardio"];
+        break;
+
+      default:
+        muscleGroups = ["full body", "cardio"];
+    }
 
     const exercises = await Exercise.find({
       muscleGroups: { $in: muscleGroups },
     }).limit(6);
-
     const plan = exercises.map((ex) => ({
       id: ex._id,
       name: ex.name,
-      sets: ex.baseSets[energyLevel],
       reps: ex.baseReps[energyLevel],
       duration: ex.baseDuration[energyLevel],
       xp: ex.xpReward[energyLevel],
       difficulty: energyLevel,
       //video: ex.demoVideoUrl,
     }));
-
-    res.json({
+    console.log("plan=", plan);
+    const response = {
       title: "Upper Body Power",
       difficulty: energyLevel,
       estimatedTime: plan.reduce((t, e) => t + e.duration, 0),
       exercises: plan,
-    });
+    };
+    res.json(response);
   } catch (err) {
+    console.log("error");
     res.status(500).json({ message: err.message });
   }
 };
