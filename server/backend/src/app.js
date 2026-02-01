@@ -32,7 +32,7 @@ app.use("/api/progress", requireAuth, progressRoutes);
 app.use(
   "/api/ai/chat",
   requireAuth,
-  allowTiers(["silver", "gold"]),
+  allowTiers("silver", "gold"),
   aiChatBotRoutes,
 );
 export default app;
