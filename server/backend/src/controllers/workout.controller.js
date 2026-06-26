@@ -179,7 +179,11 @@ export const completeWorkout = async (req, res) => {
 
 export const oauthCalendarSuccess = async (req, res) => {
   console.log("calendar access gained");
-  res.redirect("http://localhost:5173/");
+  const frontendUrl = process.env.FRONTEND_URL;
+  if (!frontendUrl) {
+    return res.status(500).json({ error: "FRONTEND_URL is not configured" });
+  }
+  res.redirect(`${frontendUrl}/`);
 };
 export const createWorkoutAlarm = async (req, res) => {
   try {

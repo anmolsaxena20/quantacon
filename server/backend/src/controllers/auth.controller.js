@@ -172,7 +172,13 @@ export const oauthSuccess = async (req, res) => {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.redirect(`http://localhost:5173/oauth-success?token=${accessToken}`);
+    const frontendUrl = process.env.FRONTEND_URL;
+    if (!frontendUrl) {
+      return res
+        .status(500)
+        .json({ message: "FRONTEND_URL is not configured" });
+    }
+    res.redirect(`${frontendUrl}/oauth-success?token=${accessToken}`);
   } catch (err) {
     console.log(err);
     res.status(400).json({ message: "oauth handling failed" });
