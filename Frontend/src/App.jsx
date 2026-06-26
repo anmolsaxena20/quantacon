@@ -21,7 +21,7 @@ import UserSearch from "./Components/search/UserSearch";
 import CreateWorkoutAlarm from "@/Pages/WorkoutAlarm"
 import NotFound from "./Pages/NotFoundPage";
 import ProtectedRoute from "./Components/layout/ProtectedLayout";
-import ChatWindow from "./components/chat/ChatWindow";
+import ChatWindow from "./Components/chat/ChatWindow";
 import WorkoutPage from "./Pages/workoutPage";
 function App() {
     return (
