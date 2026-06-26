@@ -43,7 +43,7 @@ export default function Signup() {
 
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -80,7 +80,7 @@ export default function Signup() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/verify-signup-otp", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify-signup-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, otp }),
@@ -202,7 +202,7 @@ export default function Signup() {
               </div>
 
               <Button 
-              onClick = {()=>window.location.href = "http://localhost:5000/api/auth/google"}
+              onClick = {()=>window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google`}
               variant="outline" type="button" disabled={isLoading} className="w-full">
                 <Chrome className="mr-2 h-4 w-4" /> Google
               </Button>

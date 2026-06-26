@@ -36,7 +36,7 @@ console.log("user info",userInfo)
   const fetchChatInfo = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/social/chat/${chatId}/info`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/social/chat/${chatId}/info`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -55,7 +55,7 @@ console.log("user info",userInfo)
     setLoading(true);
 
     const res = await fetch(
-      `http://localhost:5000/api/social/chat/${chatId}?limit=20&page=${pageNo}`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/social/chat/${chatId}?limit=20&page=${pageNo}`,
       {
         headers: { Authorization: `Bearer ${token}` },
       }
@@ -119,7 +119,7 @@ console.log("user info",userInfo)
     formData.append("media", file);
 
     const res = await fetch(
-      "http://localhost:5000/api/social/chat/media",
+      `${import.meta.env.VITE_API_BASE_URL}/api/social/chat/media`,
       {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },

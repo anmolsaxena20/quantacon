@@ -107,7 +107,36 @@ export default function WorkoutPage() {
     return () => clearInterval(id);
   }, [visuals]);
 
-  /* ---------------- actions ---------------- */
+
+  const handleCompleteWorkout = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const totalDurationSeconds = workout.reduce((acc, curr) => acc + curr.time, 0);
+      const totalDurationMinutes = Math.ceil(totalDurationSeconds / 60);
+
+      const res = await fetch("http://localhost:5000/api/workout/complete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          exercises: workout,
+          energyLevel: aiData.difficulty,
+          totalDuration: totalDurationMinutes,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to save workout");
+
+      toast.success("Workout saved successfully!");
+    } catch (error) {
+      console.error("Save workout error:", error);
+      toast.error("Cloudn't save workout progress");
+    }
+  };
 
   const nextExercise = async () => {
     if (active < workout.length - 1) {

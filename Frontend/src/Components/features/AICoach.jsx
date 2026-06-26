@@ -1,4 +1,4 @@
-﻿import { useState, useRef, useLayoutEffect } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
 import {
   Input,
 } from "@/Components/ui/input"
@@ -84,7 +84,7 @@ const handlePlan = ()=>{
 
     try {
       const res = await fetch(
-        "http://localhost:5000/api/ai/chat/guidance",
+        `${import.meta.env.VITE_API_BASE_URL}/api/ai/chat/guidance`,
         {
           method: "POST",
           headers: {

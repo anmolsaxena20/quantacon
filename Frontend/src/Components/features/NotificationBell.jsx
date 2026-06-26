@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Bell } from "lucide-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -44,7 +44,7 @@ useEffect(() => {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          "http://localhost:5000/api/notification/previous-notifications?limit=20",
+          `${import.meta.env.VITE_API_BASE_URL}/api/notification/previous-notifications?limit=20`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -67,7 +67,7 @@ useEffect(() => {
       ref={ref}
       className="fixed bottom-6 left-21 overflow-visible"
     >
-      {/* 🔔 Bell */}
+      {/* ?? Bell */}
       <button
         onClick={() => setOpen((p) => !p)}
         className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shadow-lg hover:scale-105 transition"
@@ -75,7 +75,7 @@ useEffect(() => {
         <Bell className="h-5 w-5" />
       </button>
 
-      {/* ⬆️ DROP-UP PANEL */}
+      {/* ?? DROP-UP PANEL */}
       {open && (
         <div
           className="

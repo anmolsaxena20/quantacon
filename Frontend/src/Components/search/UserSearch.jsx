@@ -35,7 +35,7 @@ export default function UserSearch() {
         toast.error("invalid session");
         return;
       }
-      const res = await fetch(`http://localhost:5000/api/social/follow/${userId}`,
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/follow/${userId}`,
         {
           method:"POST",
           headers:{
@@ -58,7 +58,7 @@ export default function UserSearch() {
     try {
       setLoading(true);
 
-     const res = await fetch(`http://localhost:5000/api/social/user`,
+     const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/user`,
       {
         method:"POST",
         headers:{
@@ -89,7 +89,7 @@ export default function UserSearch() {
         toast.error("invalid session");
         return;
       }
-      const res = await fetch("http://localhost:5000/api/social/chat/private",
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/chat/private`,
         {
           method:"POST",
           headers:{

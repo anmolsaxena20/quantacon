@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -98,7 +98,7 @@ export default function Profile() {
     if (!token) return toast.error("Invalid session");
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/me", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/me`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -134,7 +134,7 @@ export default function Profile() {
     formData.append("media", imageFile);
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/profile`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -164,7 +164,7 @@ export default function Profile() {
     if (!token) return toast.error("Invalid session");
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/request-otp", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/request-otp`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -192,7 +192,7 @@ export default function Profile() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/users/update-password", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/update-password`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -373,7 +373,7 @@ export default function Profile() {
               <CardHeader className="flex flex-row justify-between items-center border-b border-border/50 pb-4">
                 <CardTitle className="text-xl capitalize font-heading flex items-center gap-2">
                   <span className="bg-primary/10 text-primary p-2 rounded-full">
-                    {showList === "followers" ? "👥" : "👣"}
+                    {showList === "followers" ? "??" : "??"}
                   </span>
                   {showList}
                 </CardTitle>
@@ -383,14 +383,14 @@ export default function Profile() {
                   className="rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
                   onClick={() => setShowList(null)}
                 >
-                  ✕
+                  ?
                 </Button>
               </CardHeader>
 
               <CardContent className="p-0 max-h-[400px] overflow-y-auto custom-scrollbar">
                 {user?.[showList]?.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-muted-foreground space-y-3">
-                    <span className="text-4xl">📭</span>
+                    <span className="text-4xl">??</span>
                     <p className="text-sm">No {showList} found</p>
                   </div>
                 ) : (

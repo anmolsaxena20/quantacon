@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -94,7 +94,7 @@ export default function WorkoutCreator() {
 
         setIsLoading(true);
         try {
-            const res = await fetch("http://localhost:5000/api/ai/generate",
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/ai/generate`,
                 {
                     method: "POST",
                     headers: {

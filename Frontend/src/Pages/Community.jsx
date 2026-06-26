@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Heart, MessageCircle, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,7 @@ const[replyComment,setreplyComment] = useState({});
 
   const fetchFeed = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/social/feed", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/feed`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -41,7 +41,7 @@ const[replyComment,setreplyComment] = useState({});
 
   const fetchReels = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/social/reels", {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/reels`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -57,7 +57,7 @@ const[replyComment,setreplyComment] = useState({});
   const handleLike = async (postId) => {
     console.log("postId", postId)
     try {
-      const res = await fetch(`http://localhost:5000/api/social/like/post/${postId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/like/post/${postId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -73,7 +73,7 @@ const[replyComment,setreplyComment] = useState({});
     // abhi kam karana hai ispe
     console.log("reelID", reelId);
     try {
-      const res = await fetch(`http://localhost:5000/api/social/like/reel/${reelId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/like/reel/${reelId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -90,7 +90,7 @@ const[replyComment,setreplyComment] = useState({});
     if (!text) return;
 
     try {
-      await fetch(`http://localhost:5000/api/social/comment/post/${postId}`, {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/comment/post/${postId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -108,7 +108,7 @@ const[replyComment,setreplyComment] = useState({});
     if (!text) return;
 
     try {
-      await fetch(`http://localhost:5000/api/social/comment/reel/${postId}`, {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/comment/reel/${postId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -135,7 +135,7 @@ const[replyComment,setreplyComment] = useState({});
   const fetchComments = async (postId, limit = 20) => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/social/comments/post/${postId}?limit=${limit}`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/social/comments/post/${postId}?limit=${limit}`,
       {
         method:"GET",
         headers:{
@@ -164,7 +164,7 @@ const[replyComment,setreplyComment] = useState({});
  const fetchPostReplyComments = async (postId, limit = 20,parentComment) => {
   try {
     const res = await fetch(
-      `http://localhost:5000/api/social/comments/post/${postId}?limit=${limit}&parentComment=${parentComment}`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/social/comments/post/${postId}?limit=${limit}&parentComment=${parentComment}`,
       {
         method:"GET",
         headers:{
@@ -195,7 +195,7 @@ const[replyComment,setreplyComment] = useState({});
 const handleReply = async (postId, commentId, text) => {
   if (!text.trim()) return;
 
-  await fetch(`http://localhost:5000/api/social/comment/post/${postId}`, {
+  await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/comment/post/${postId}`, {
     method: "POST",
     headers: { "Content-Type": "application/json","Authorization":`Bearer ${token}` },
     body: JSON.stringify({ text ,parentComment:commentId}),
@@ -288,7 +288,7 @@ const[seeReply,setSeeReply] = useState(false);
 
     <div className="font-semibold">
       {post.author.name}
-      {post.author.isVerifiedUser && " ✔️"}
+      {post.author.isVerifiedUser && " ??"}
     </div>
 
     <img
@@ -427,7 +427,7 @@ function CommentBox({ onSubmit }) {
     const fetchReplies = async () => {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `http://localhost:5000/api/social/comments/post/${parentId}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/social/comments/post/${parentId}`,
         {
           method:"GET",
           headers:{

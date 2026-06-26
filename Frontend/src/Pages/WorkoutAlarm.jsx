@@ -23,7 +23,7 @@ const handleCreateAlarm = async () => {
 
   try {
     const res = await fetch(
-      "http://localhost:5000/api/workout/calendar/create",
+      `${import.meta.env.VITE_API_BASE_URL}/api/workout/calendar/create`,
       {
         method: "POST",
         headers: {
@@ -36,7 +36,7 @@ const handleCreateAlarm = async () => {
 
     // 🔐 OAuth must redirect here
     if (res.status === 401) {
-      window.location.href = "http://localhost:5000/api/calendar/google";
+      window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/calendar/google`;
       return;
     }
 

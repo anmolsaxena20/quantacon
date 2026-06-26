@@ -1,4 +1,4 @@
-﻿import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import EnergySelector from "@/components/features/EnergySelector";
 import { Clock, Trophy, Flame, PlayCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,7 +51,7 @@ export default function Dashboard() {
             toast.error("invalid session");
             return;
         }
-        const res = await fetch(`http://localhost:5000/api/workout/stats?month=${month}&year=${year}`,
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/workout/stats?month=${month}&year=${year}`,
             {
                 method:"GET",
                 headers:{

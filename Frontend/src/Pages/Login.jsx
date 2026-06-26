@@ -1,4 +1,4 @@
-﻿import { useState ,useEffect} from "react";
+import { useState ,useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +23,7 @@ export default function Login() {
 
         try {
             const data = { email: email, password: password }
-            const res = await fetch("http://localhost:5000/api/auth/login",
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/login`,
                 {
                     method: "POST",
                     headers: {
@@ -102,7 +102,7 @@ export default function Login() {
 
                     <div className="grid gap-2">
                         <Button
-                            onClick={() => window.location.href = "http://localhost:5000/api/auth/google"}
+                            onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google`}
                             variant="outline" type="button" disabled={isLoading} className="w-full">
                             <Chrome className="mr-2 h-4 w-4" /> Google
                         </Button>

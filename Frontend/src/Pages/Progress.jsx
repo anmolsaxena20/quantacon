@@ -1,4 +1,4 @@
-﻿import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Flame, Trophy, Calendar, Activity, Clock } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -37,7 +37,7 @@ export default function ProgressPage() {
     const fetchProgress = async()=>{
       try {
         const token = localStorage.getItem("token");
-          const res= await fetch("http://localhost:5000/api/progress/stats",
+          const res= await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/progress/stats`,
               {
                   method:"GET",
                   headers:{

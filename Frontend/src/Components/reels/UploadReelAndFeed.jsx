@@ -28,7 +28,7 @@ export default function CreatePostReel() {
     formData.append("media", postFile);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/social/post`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/post`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -56,7 +56,7 @@ export default function CreatePostReel() {
     formData.append("media", reelFile);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/social/reel`, {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/reel`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

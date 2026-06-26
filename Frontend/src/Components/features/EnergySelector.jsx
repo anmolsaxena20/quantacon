@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Clock, Trophy, Flame, PlayCircle, Moon, Battery, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -32,7 +32,7 @@ export default function EnergySelector() {
         try {
             const token = localStorage.getItem("token");
             if (!token) return;
-            const res = await fetch("http://localhost:5000/api/workout/generate", {
+            const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/workout/generate`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,

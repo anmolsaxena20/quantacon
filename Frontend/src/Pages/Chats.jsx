@@ -15,7 +15,7 @@ export default function Chats() {
       if (!token) return toast.error("Invalid session");
 
       try {
-        const res = await fetch("http://localhost:5000/api/social/chat", {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/social/chat`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

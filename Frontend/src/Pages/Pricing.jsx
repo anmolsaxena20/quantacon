@@ -57,7 +57,7 @@ const PricingSync = () => {
         }
         setLoading(true);
         try {
-            const orderRes = await fetch("http://localhost:5000/api/payment/create-order", {
+            const orderRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/payment/create-order`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json",
                     "Authorization":`Bearer ${token}`
@@ -77,7 +77,7 @@ const PricingSync = () => {
                 order_id: orderData.orderId,
                 handler: async function (response) {
                     try {
-                        const verifyRes = await fetch("http://localhost:5000/api/payment/verify", {
+                        const verifyRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/payment/verify`, {
                             method: "POST",
                             headers: { 
                                 "Content-Type": "application/json" ,
