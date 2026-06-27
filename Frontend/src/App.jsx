@@ -6,22 +6,14 @@ import ProfileSetup from "@/Pages/Profile";
 import Workout from "@/pages/Workout";
 import WorkoutCreator from "@/pages/WorkoutCreator";
 import ProgressPage from "@/pages/Progress";
-import Community from "@/pages/Community";
 import PricingSync from "@/Pages/Pricing";
 import Signup from "./Pages/SignupPage";
 import { AuthContextProvider } from "./Context/AuthContext";
-import Chat from "./Pages/Chat";
-import { ChatStoreProvider } from "./Context/ChatStore";
-import Chats from "./Pages/Chats";
-import CommunityLayout from "./Components/layout/CommunityLayout"
 import Logout from "./Pages/LogoutPage";
 import OAuthSuccessPage from "./Pages/Oauth";
-import CreatePostReel from "./Components/reels/UploadReelAndFeed";
-import UserSearch from "./Components/search/UserSearch";
 import CreateWorkoutAlarm from "@/Pages/WorkoutAlarm"
 import NotFound from "./Pages/NotFoundPage";
 import ProtectedRoute from "./Components/layout/ProtectedLayout";
-import ChatWindow from "./Components/chat/ChatWindow";
 import WorkoutPage from "./Pages/workoutPage";
 function App() {
     return (
@@ -41,17 +33,6 @@ function App() {
                     <Route path="workout-alarm" element={<CreateWorkoutAlarm/>}/>
                     </Route>
                 </Route>
-                <Route path='/community' element={<ChatStoreProvider><CommunityLayout /></ChatStoreProvider>}>
-                <Route element={<ProtectedRoute/>}>
-                    <Route path="social" element={<Community />} />
-                    <Route path="chats" element={<Chats />} />
-                    <Route path="chat/:chatId" element={<ChatWindow />} />
-                    <Route path="/community/profile-setup" element={<ProfileSetup />} />
-                    <Route path="reel" element={<CreatePostReel />} />
-                    <Route path="search" element={<UserSearch />} />
-                    </Route>
-                </Route>
-
                 <Route path="/login" element={<AuthContextProvider><Login /></AuthContextProvider>} />
                 <Route path="/signup" element={<AuthContextProvider><Signup /></AuthContextProvider>} />
                 <Route path="/oauth-success" element={<OAuthSuccessPage />} />

@@ -1,7 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { Search, MessageCircle, Clapperboard, User, House,Upload } from "lucide-react";
-import { useState } from "react";
-import UserSearch from "../search/UserSearch";
+import { User, House } from "lucide-react";
 
 export default function Navbar() {
 
@@ -22,20 +20,6 @@ export default function Navbar() {
         <div className="flex items-center gap-6">
           <button onClick={() => navigate("/dashboard")}>
             <House className="w-5 h-5" />
-          </button>
-           <button onClick={() => navigate("reel")}>
-            <Upload className="w-5 h-5" />
-          </button>
-          <button onClick={() => navigate("/community/search")}>
-            <Search className="w-5 h-5" />
-          </button>
-
-          <button onClick={() => navigate("social")}>
-            <Clapperboard className="w-5 h-5" />
-          </button>
-
-          <button onClick={() => navigate("chats")}>
-            <MessageCircle className="w-5 h-5" />
           </button>
 
           <button onClick={() => navigate("/community/profile-setup")}>
