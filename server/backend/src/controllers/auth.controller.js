@@ -63,6 +63,7 @@ export const signup = async (req, res) => {
     await sendEmailOtp(email, otp);
     res.json({ message: "OTP sent for verification", userId: user._id });
   } catch (err) {
+    
     res.status(500).json({ message: err.message });
   }
 };
