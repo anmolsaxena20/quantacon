@@ -10,6 +10,7 @@ import {
   UserCircle,
   ChevronLeft,
   ChevronRight,
+  Users,
   Menu,
   Sun,
   Moon,
@@ -36,6 +37,7 @@ export default function AppLayout() {
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: Dumbbell, label: "Workout", path: "/workout" },
     { icon: PenTool, label: "Create Plan", path: "/create-workout" },
+    { icon: Users, label: "Community", path: "/community/social" },
     { icon: TrendingUp, label: "Progress", path: "/progress" },
     { icon: UserCircle, label: "Profile", path: "/community/profile-setup" },
   ];
