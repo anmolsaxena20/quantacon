@@ -17,6 +17,8 @@ import { allowTiers } from "./middlewares/tier.middleware.js";
 import passport from "./config/passport.config.js";
 const app = express();
 
+app.set("trust proxy", true);
+
 const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .split(",")
   .map((origin) => origin.trim())
