@@ -1,11 +1,6 @@
 import User from "../models/user.model.js";
 import { hashPassword, comparePassword } from "../utils/hash.util.js";
 import {
-  createEmailOtp,
-  sendEmailOtp,
-  verifyEmailOtp,
-} from "../utils/otp.util.js";
-import {
   generateAccessToken,
   generateRefreshToken,
 } from "../utils/jwt.util.js";
@@ -57,40 +52,18 @@ export const signup = async (req, res) => {
       phone,
       password: hashedPassword,
       authProvider: "local",
-      isVerified: false,
+      isVerified: true,
     });
-    const otp = await createEmailOtp({ userId: user._id, purpose: "signup" });
-    await sendEmailOtp(email, otp);
-    res.json({ message: "OTP sent for verification", userId: user._id });
-  } catch (err) {
-    
-    res.status(500).json({ message: err.message });
-  }
-};
 
-export const verifySignupOtp = async (req, res) => {
-  try {
-    const { userId, otp } = req.body;
-    await verifyEmailOtp({ userId, purpose: "signup", inputOtp: otp });
-    const user = await User.findByIdAndUpdate(
-      userId,
-      {
-        isVerified: true,
-        lastLogin: new Date(),
-      },
-      { new: true },
-    );
-    const accessToken = generateAccessToken({
-      id: user._id,
-      tier: user.tier,
-    });
+    user.lastLogin = new Date();
+
+    const accessToken = generateAccessToken({ id: user._id, tier: user.tier });
     const refreshToken = generateRefreshToken({
       id: user._id,
       tier: user.tier,
     });
     user.refreshToken = refreshToken;
     await user.save();
-
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
@@ -98,11 +71,9 @@ export const verifySignupOtp = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({
-      accessToken,
-    });
+    res.json({ accessToken });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,12 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight, UserPlus, Chrome } from "lucide-react";
 import { toast, Toaster } from "sonner";
@@ -26,16 +20,13 @@ export default function Signup() {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isOtp, setIsOtp] = useState(false);
-  const { setIsLogin, setUser } = useAuth();
+  const { setIsLogin } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
-  const [otp, setOtp] = useState("");
-  const[userId,setUserId] = useState(null);
   
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -57,49 +48,16 @@ export default function Signup() {
       const data = await res.json();
       console.log("data received in signup",data);
       if (!res.ok) throw new Error("Signup failed");
-      toast.success("OTP sent to your email");
-      setTimeout(()=>{
-        setIsOtp(true);
-      setUserId(data.userId)
-      },500);
+      toast.success("Signup successful");
+      localStorage.setItem("token", data.accessToken);
+      setIsLogin(true);
+      navigate("/dashboard");
       
     } catch (error) {
       console.error(error);
       toast.error("Signup failed");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleOtpVerify = async () => {
-    if (otp.length !== 6) {
-      toast.error("Please enter a valid 6-digit OTP");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify-signup-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, otp }),
-      });
-
-      if (!res.ok) throw new Error("OTP verification failed");
-
-      toast.success("Account verified successfully");
-      const data = await res.json();
-      localStorage.setItem("token",data.accessToken);
-      setIsLogin(true);
-        navigate("/dashboard");
-    
-    } catch (error) {
-      console.error(error);
-      toast.error("Invalid OTP");
-    } finally {
-      setIsLoading(false);
-      await getUserDetails();
     }
   };
 
@@ -127,95 +85,63 @@ export default function Signup() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {!isOtp && (
-            <form onSubmit={handleSignup} className="space-y-4">
-              <Input
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-              <Input
-                type="email"
-                placeholder="Email/Phone No"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Input
-                placeholder="Height (cm)"
-                value={height}
-                onChange={(e) => setHeight(e.target.value)}
+          <form onSubmit={handleSignup} className="space-y-4">
+            <Input
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <Input
+              type="email"
+              placeholder="Email/Phone No"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              placeholder="Height (cm)"
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
 
-              />
-              <Input
-                placeholder="Weight (kg)"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
+            />
+            <Input
+              placeholder="Weight (kg)"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
 
-              />
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
-              <Button className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating..." : "Sign Up"}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </form>
-          )}
+            <Button className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating..." : "Sign Up"}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </form>
 
-          {isOtp && (
-            <div className="space-y-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                Enter the 6-digit OTP sent to your email
-              </p>
-              <div className="flex justify-center items-center">
-              <InputOTP value={otp} onChange={setOtp} maxLength={6}>
-                <InputOTPGroup>
-                  {[0, 1, 2].map((i) => (
-                    <InputOTPSlot key={i} index={i} />
-                  ))}
-                </InputOTPGroup>
-                <InputOTPSeparator />
-                <InputOTPGroup>
-                  {[3, 4, 5].map((i) => (
-                    <InputOTPSlot key={i} index={i} />
-                  ))}
-                </InputOTPGroup>
-              </InputOTP>
-              </div>
+          <div className="relative my-6">
+            <Separator />
+          </div>
 
-              <Button className="w-full" onClick={handleOtpVerify} disabled={isLoading}>
-                Verify OTP
-              </Button>
-            </div>
-          )}
-          {!isOtp && (
-            <>
-              <div className="relative my-6">
-                <Separator />
-              </div>
+          <Button 
+          onClick = {()=>window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google`}
+          variant="outline" type="button" disabled={isLoading} className="w-full">
+            <Chrome className="mr-2 h-4 w-4" /> Google
+          </Button>
 
-              <Button 
-              onClick = {()=>window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/auth/google`}
-              variant="outline" type="button" disabled={isLoading} className="w-full">
-                <Chrome className="mr-2 h-4 w-4" /> Google
-              </Button>
-
-              <Button
-                variant="ghost"
-                className="w-full"
-                onClick={() => navigate("/login")}
-              >
-                Already have an account? Sign in
-              </Button>
-            </>
-          )}
+          <Button
+            variant="ghost"
+            className="w-full"
+            onClick={() => navigate("/login")}
+          >
+            Already have an account? Sign in
+          </Button>
         </CardContent>
 
         <CardFooter className="justify-center">
