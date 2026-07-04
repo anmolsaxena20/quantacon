@@ -9,6 +9,7 @@ import ProgressPage from "@/pages/Progress";
 import Community from "@/pages/Community";
 import PricingSync from "@/Pages/Pricing";
 import Signup from "./Pages/SignupPage";
+import {Analytics} from "@vercel/analytics/react" 
 import { AuthContextProvider } from "./Context/AuthContext";
 import Chat from "./Pages/Chat";
 import { ChatStoreProvider } from "./Context/ChatStore";
@@ -25,6 +26,7 @@ import ChatWindow from "./Components/chat/ChatWindow";
 import WorkoutPage from "./Pages/workoutPage";
 function App() {
     return (
+        <>
         <BrowserRouter>
         <AuthContextProvider>
             <Routes>
@@ -59,6 +61,8 @@ function App() {
             </Routes>
             </AuthContextProvider>
         </BrowserRouter>
+        <Analytics />
+        </>
     );
 }
 
